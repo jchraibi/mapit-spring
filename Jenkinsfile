@@ -1,7 +1,6 @@
 
-  agent {
-      label 'maven'
-  }
+  node 'maven' {
+      
   stages {
     stage('Build App') {
       steps {
@@ -83,4 +82,5 @@
         }
       }
     }
+  }
   }
