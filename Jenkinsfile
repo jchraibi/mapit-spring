@@ -1,5 +1,5 @@
 
-  node 'maven' {
+  node('maven') {
       
   stages {
     stage('Build App') {
