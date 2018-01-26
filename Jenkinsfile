@@ -1,4 +1,4 @@
-pipeline {
+
   agent {
       label 'maven'
   }
@@ -84,4 +84,3 @@ pipeline {
       }
     }
   }
-}
