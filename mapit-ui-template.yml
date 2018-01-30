@@ -27,7 +27,7 @@ objects:
     source:
       git:
         ref: master
-        uri: https://github.com/siamaksade/mapit-spring.git
+        uri: https://github.com/jchraibi/mapit-spring.git
       type: Git
     strategy:
       sourceStrategy:
@@ -40,9 +40,9 @@ objects:
       type: Source
     successfulBuildsHistoryLimit: 5
     triggers:
-    - type: ConfigChange
     - imageChange: {}
       type: ImageChange
+    - type: ConfigChange
   status:
     lastVersion: 0
 - apiVersion: v1
