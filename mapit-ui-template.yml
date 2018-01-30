@@ -1,0 +1,2080 @@
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: mapit-ui
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      application: mapit
+      demo: mapit-template
+    name: mapit
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: mapit:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: master
+        uri: https://github.com/siamaksade/mapit-spring.git
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: MAVEN_MIRROR_URL
+        from:
+          kind: ImageStreamTag
+          name: redhat-openjdk18-openshift:1.1
+          namespace: openshift
+      type: Source
+    successfulBuildsHistoryLimit: 5
+    triggers:
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+  status:
+    lastVersion: 0
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      description: Defines how to build the application
+      template.alpha.openshift.io/wait-for-ready: "true"
+    creationTimestamp: null
+    labels:
+      template: httpd-example
+    name: ui
+    ownerReferences:
+    - apiVersion: template.openshift.io/v1
+      blockOwnerDeletion: true
+      kind: TemplateInstance
+      name: 7ba407d7-d3ad-4702-8ccb-92b15763979c
+      uid: 5a9b733a-05a8-11e8-97ac-000c29f32a28
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ui:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      contextDir: /src/main/resources/static
+      git:
+        ref: master
+        uri: https://github.com/jchraibi/mapit-spring.git
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: httpd:2.4
+          namespace: openshift
+      type: Source
+    triggers:
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+    - github:
+        secret: qmFH8LoMtJSEToW0A2gvf0VXXN8LOytTRbOtdCyR
+      type: GitHub
+    - generic:
+        secret: eraCI8iX3Et6XeMIrjw2kaBMayQnPIRNQDdoOtWh
+      type: Generic
+  status:
+    lastVersion: 0
+- apiVersion: v1
+  kind: Build
+  metadata:
+    annotations:
+      openshift.io/build-config.name: mapit
+      openshift.io/build.number: "1"
+      openshift.io/build.pod-name: mapit-1-build
+    creationTimestamp: null
+    labels:
+      application: mapit
+      buildconfig: mapit
+      demo: mapit-template
+      openshift.io/build-config.name: mapit
+      openshift.io/build.start-policy: Serial
+    name: mapit-1
+    ownerReferences:
+    - apiVersion: build.openshift.io/v1
+      controller: true
+      kind: BuildConfig
+      name: mapit
+      uid: 753e99f0-05a7-11e8-b864-000c29d0d489
+  spec:
+    nodeSelector: null
+    output:
+      pushSecret:
+        name: builder-dockercfg-ckdqd
+      to:
+        kind: ImageStreamTag
+        name: mapit:latest
+    postCommit: {}
+    resources: {}
+    revision:
+      git:
+        author:
+          email: siamaksade@gmail.com
+          name: Siamak Sadeghianfar
+        commit: d5dc2e238ba444a2063b856f1d526dd76d23538c
+        committer:
+          email: siamaksade@gmail.com
+          name: Siamak Sadeghianfar
+        message: added Jenkinsfile
+      type: Git
+    serviceAccount: builder
+    source:
+      git:
+        ref: master
+        uri: https://github.com/siamaksade/mapit-spring.git
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: MAVEN_MIRROR_URL
+        from:
+          kind: DockerImage
+          name: registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5
+      type: Source
+    triggeredBy:
+    - imageChangeBuild:
+        fromRef:
+          kind: ImageStreamTag
+          name: redhat-openjdk18-openshift:1.1
+          namespace: openshift
+        imageID: registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5
+      message: Image change
+  status:
+    config:
+      name: mapit
+    output:
+      to:
+        imageDigest: sha256:7bd65d210db002b332c89cee44c3cf7fc47edda5e709d7597086eac16c6273b3
+    outputDockerImageReference: docker-registry.default.svc:5000/mapit/mapit:latest
+    phase: New
+    stages:
+    - durationMilliseconds: 2718
+      name: FetchInputs
+      startTime: 2018-01-30T10:24:41Z
+      steps:
+      - durationMilliseconds: 2718
+        name: FetchGitSource
+        startTime: 2018-01-30T10:24:41Z
+    - durationMilliseconds: 49286
+      name: CommitContainer
+      startTime: 2018-01-30T10:32:38Z
+      steps:
+      - durationMilliseconds: 49286
+        name: CommitContainer
+        startTime: 2018-01-30T10:32:38Z
+    - durationMilliseconds: 428060
+      name: Assemble
+      startTime: 2018-01-30T10:26:20Z
+      steps:
+      - durationMilliseconds: 428060
+        name: AssembleBuildScripts
+        startTime: 2018-01-30T10:26:20Z
+    - durationMilliseconds: 198662
+      name: PushImage
+      startTime: 2018-01-30T10:33:28Z
+      steps:
+      - durationMilliseconds: 198662
+        name: PushImage
+        startTime: 2018-01-30T10:33:28Z
+- apiVersion: v1
+  kind: Build
+  metadata:
+    annotations:
+      openshift.io/build-config.name: ui
+      openshift.io/build.number: "1"
+      openshift.io/build.pod-name: ui-1-build
+    creationTimestamp: null
+    labels:
+      buildconfig: ui
+      openshift.io/build-config.name: ui
+      openshift.io/build.start-policy: Serial
+      template: httpd-example
+    name: ui-1
+    ownerReferences:
+    - apiVersion: build.openshift.io/v1
+      controller: true
+      kind: BuildConfig
+      name: ui
+      uid: 5b1bb776-05a8-11e8-97ac-000c29f32a28
+  spec:
+    nodeSelector: null
+    output:
+      pushSecret:
+        name: builder-dockercfg-ckdqd
+      to:
+        kind: ImageStreamTag
+        name: ui:latest
+    postCommit: {}
+    resources: {}
+    revision:
+      git:
+        author:
+          email: jchraibi@redhat.com
+          name: jchraibi
+        commit: f463a6b728fdb1929b2b99988f432ea4d97508e3
+        committer:
+          email: noreply@github.com
+          name: GitHub
+        message: Update index.html
+      type: Git
+    serviceAccount: builder
+    source:
+      contextDir: /src/main/resources/static
+      git:
+        ref: master
+        uri: https://github.com/jchraibi/mapit-spring.git
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: DockerImage
+          name: registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd
+      type: Source
+    triggeredBy:
+    - imageChangeBuild:
+        fromRef:
+          kind: ImageStreamTag
+          name: httpd:2.4
+          namespace: openshift
+        imageID: registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd
+      message: Image change
+  status:
+    config:
+      name: ui
+    output:
+      to:
+        imageDigest: sha256:b3340c366c7a46f8acb18bbecbedd49af48aa8dd335fc9e899e287b409558e06
+    outputDockerImageReference: docker-registry.default.svc:5000/mapit/ui:latest
+    phase: New
+    stages:
+    - durationMilliseconds: 2165
+      name: FetchInputs
+      startTime: 2018-01-30T10:29:14Z
+      steps:
+      - durationMilliseconds: 2165
+        name: FetchGitSource
+        startTime: 2018-01-30T10:29:14Z
+    - durationMilliseconds: 38280
+      name: CommitContainer
+      startTime: 2018-01-30T10:31:01Z
+      steps:
+      - durationMilliseconds: 38280
+        name: CommitContainer
+        startTime: 2018-01-30T10:31:01Z
+    - durationMilliseconds: 58910
+      name: Assemble
+      startTime: 2018-01-30T10:30:42Z
+      steps:
+      - durationMilliseconds: 58910
+        name: AssembleBuildScripts
+        startTime: 2018-01-30T10:30:42Z
+    - durationMilliseconds: 60427
+      name: PushImage
+      startTime: 2018-01-30T10:31:41Z
+      steps:
+      - durationMilliseconds: 60427
+        name: PushImage
+        startTime: 2018-01-30T10:31:41Z
+- apiVersion: v1
+  kind: Build
+  metadata:
+    annotations:
+      openshift.io/build-config.name: ui
+      openshift.io/build.number: "2"
+      openshift.io/build.pod-name: ui-2-build
+    creationTimestamp: null
+    labels:
+      buildconfig: ui
+      openshift.io/build-config.name: ui
+      openshift.io/build.start-policy: Serial
+      template: httpd-example
+    name: ui-2
+    ownerReferences:
+    - apiVersion: build.openshift.io/v1
+      controller: true
+      kind: BuildConfig
+      name: ui
+      uid: 5b1bb776-05a8-11e8-97ac-000c29f32a28
+  spec:
+    nodeSelector: null
+    output:
+      pushSecret:
+        name: builder-dockercfg-ckdqd
+      to:
+        kind: ImageStreamTag
+        name: ui:latest
+    postCommit: {}
+    resources: {}
+    revision:
+      git:
+        author:
+          email: jchraibi@redhat.com
+          name: jchraibi
+        commit: 8a2cbf06e5f34505e3f82a6a3e6ecf8ec95dd111
+        committer:
+          email: noreply@github.com
+          name: GitHub
+        message: Update index.html
+      type: Git
+    serviceAccount: builder
+    source:
+      contextDir: /src/main/resources/static
+      git:
+        ref: master
+        uri: https://github.com/jchraibi/mapit-spring.git
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: DockerImage
+          name: registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd
+      type: Source
+    triggeredBy:
+    - message: Manually triggered
+  status:
+    config:
+      name: ui
+    output:
+      to:
+        imageDigest: sha256:a3eb8571fadcd7d175be21a457347ef1bb2e6961c6659dbd82e71bb5329e83ce
+    outputDockerImageReference: docker-registry.default.svc:5000/mapit/ui:latest
+    phase: New
+    stages:
+    - durationMilliseconds: 1832
+      name: FetchInputs
+      startTime: 2018-01-30T10:43:58Z
+      steps:
+      - durationMilliseconds: 1832
+        name: FetchGitSource
+        startTime: 2018-01-30T10:43:58Z
+    - durationMilliseconds: 17177
+      name: CommitContainer
+      startTime: 2018-01-30T10:44:22Z
+      steps:
+      - durationMilliseconds: 17177
+        name: CommitContainer
+        startTime: 2018-01-30T10:44:22Z
+    - durationMilliseconds: 22777
+      name: Assemble
+      startTime: 2018-01-30T10:44:17Z
+      steps:
+      - durationMilliseconds: 22777
+        name: AssembleBuildScripts
+        startTime: 2018-01-30T10:44:17Z
+    - durationMilliseconds: 3173
+      name: PushImage
+      startTime: 2018-01-30T10:44:40Z
+      steps:
+      - durationMilliseconds: 3173
+        name: PushImage
+        startTime: 2018-01-30T10:44:40Z
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    generation: 1
+    labels:
+      application: mapit
+      demo: mapit-template
+    name: mapit
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: docker-registry.default.svc:5000/mapit/mapit:latest
+      generation: 1
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: Source
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: Keeps track of changes in the application image
+    creationTimestamp: null
+    generation: 1
+    labels:
+      template: httpd-example
+    name: ui
+    ownerReferences:
+    - apiVersion: template.openshift.io/v1
+      blockOwnerDeletion: true
+      kind: TemplateInstance
+      name: 7ba407d7-d3ad-4702-8ccb-92b15763979c
+      uid: 5a9b733a-05a8-11e8-97ac-000c29f32a28
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: docker-registry.default.svc:5000/mapit/ui:latest
+      generation: null
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: ""
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    generation: 1
+    labels:
+      application: mapit
+      demo: mapit-template
+    name: mapit
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      deploymentconfig: mapit
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          application: mapit
+          deploymentconfig: mapit
+        name: mapit
+      spec:
+        containers:
+        - env:
+          - name: POSTGRES_HOST
+            value: mapit-postgresql
+          - name: POSTGRES_DB
+            value: mapitdb
+          - name: POSTGRES_USER
+            value: userOGR
+          - name: POSTGRES_PASSWORD
+            value: ooUvRITI
+          image: docker-registry.default.svc:5000/mapit/mapit@sha256:7bd65d210db002b332c89cee44c3cf7fc47edda5e709d7597086eac16c6273b3
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: mapit
+          ports:
+          - containerPort: 8778
+            name: jolokia
+            protocol: TCP
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          - containerPort: 8443
+            name: https
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 75
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - mapit
+        from:
+          kind: ImageStreamTag
+          name: mapit:latest
+          namespace: mapit
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    generation: 1
+    labels:
+      application: mapit
+      demo: mapit-template
+    name: mapit-postgresql
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      deploymentconfig: mapit-postgresql
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          application: mapit
+          deploymentconfig: mapit-postgresql
+        name: mapit-postgresql
+      spec:
+        containers:
+        - env:
+          - name: POSTGRESQL_USER
+            value: userOGR
+          - name: POSTGRESQL_PASSWORD
+            value: ooUvRITI
+          - name: POSTGRESQL_DATABASE
+            value: mapitdb
+          image: registry.access.redhat.com/rhscl/postgresql-95-rhel7@sha256:33888776920331bc37ae17692bac043210305aa35ed444cf5eded89f8311d0d7
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 10
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 5432
+            timeoutSeconds: 1
+          name: mapit-postgresql
+          ports:
+          - containerPort: 5432
+            protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c
+                'SELECT 1'
+            failureThreshold: 10
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 50m
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/pgsql/data
+            name: mapit-postgresql-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 60
+        volumes:
+        - emptyDir: {}
+          name: mapit-postgresql-data
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - mapit-postgresql
+        from:
+          kind: ImageStreamTag
+          name: postgresql:latest
+          namespace: openshift
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the application server
+      template.alpha.openshift.io/wait-for-ready: "true"
+    creationTimestamp: null
+    generation: 1
+    labels:
+      template: httpd-example
+    name: ui
+    ownerReferences:
+    - apiVersion: template.openshift.io/v1
+      blockOwnerDeletion: true
+      kind: TemplateInstance
+      name: 7ba407d7-d3ad-4702-8ccb-92b15763979c
+      uid: 5a9b733a-05a8-11e8-97ac-000c29f32a28
+  spec:
+    replicas: 1
+    selector:
+      name: ui
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          name: ui
+        name: ui
+      spec:
+        containers:
+        - image: docker-registry.default.svc:5000/mapit/ui@sha256:a3eb8571fadcd7d175be21a457347ef1bb2e6961c6659dbd82e71bb5329e83ce
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          name: httpd-example
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              memory: 512Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - httpd-example
+        from:
+          kind: ImageStreamTag
+          name: ui:latest
+          namespace: mapit
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    annotations:
+      openshift.io/deployer-pod.completed-at: 2018-01-30 05:39:08 -0500 EST
+      openshift.io/deployer-pod.created-at: 2018-01-30 05:36:48 -0500 EST
+      openshift.io/deployer-pod.name: mapit-1-deploy
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: mapit
+      openshift.io/deployment.phase: Complete
+      openshift.io/deployment.replicas: "1"
+      openshift.io/deployment.status-reason: config change
+      openshift.io/encoded-deployment-config: |
+        {"kind":"DeploymentConfig","apiVersion":"v1","metadata":{"name":"mapit","namespace":"mapit","selfLink":"/apis/apps.openshift.io/v1/namespaces/mapit/deploymentconfigs/mapit","uid":"759deb86-05a7-11e8-b864-000c29d0d489","resourceVersion":"8523516","generation":2,"creationTimestamp":"2018-01-30T10:22:22Z","labels":{"application":"mapit","demo":"mapit-template"},"annotations":{"openshift.io/generated-by":"OpenShiftNewApp"}},"spec":{"strategy":{"type":"Recreate","recreateParams":{"timeoutSeconds":600},"resources":{},"activeDeadlineSeconds":21600},"triggers":[{"type":"ImageChange","imageChangeParams":{"automatic":true,"containerNames":["mapit"],"from":{"kind":"ImageStreamTag","namespace":"mapit","name":"mapit:latest"},"lastTriggeredImage":"docker-registry.default.svc:5000/mapit/mapit@sha256:7bd65d210db002b332c89cee44c3cf7fc47edda5e709d7597086eac16c6273b3"}},{"type":"ConfigChange"}],"replicas":1,"revisionHistoryLimit":10,"test":false,"selector":{"deploymentconfig":"mapit"},"template":{"metadata":{"name":"mapit","creationTimestamp":null,"labels":{"application":"mapit","deploymentconfig":"mapit"},"annotations":{"openshift.io/generated-by":"OpenShiftNewApp"}},"spec":{"containers":[{"name":"mapit","image":"docker-registry.default.svc:5000/mapit/mapit@sha256:7bd65d210db002b332c89cee44c3cf7fc47edda5e709d7597086eac16c6273b3","ports":[{"name":"jolokia","containerPort":8778,"protocol":"TCP"},{"name":"http","containerPort":8080,"protocol":"TCP"},{"name":"https","containerPort":8443,"protocol":"TCP"}],"env":[{"name":"POSTGRES_HOST","value":"mapit-postgresql"},{"name":"POSTGRES_DB","value":"mapitdb"},{"name":"POSTGRES_USER","value":"userOGR"},{"name":"POSTGRES_PASSWORD","value":"ooUvRITI"}],"resources":{},"livenessProbe":{"httpGet":{"path":"/health","port":8080,"scheme":"HTTP"},"initialDelaySeconds":15,"timeoutSeconds":1,"periodSeconds":5,"successThreshold":1,"failureThreshold":10},"readinessProbe":{"httpGet":{"path":"/health","port":8080,"scheme":"HTTP"},"initialDelaySeconds":15,"timeoutSeconds":1,"periodSeconds":5,"successThreshold":1,"failureThreshold":10},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":75,"dnsPolicy":"ClusterFirst","securityContext":{},"schedulerName":"default-scheduler"}}},"status":{"latestVersion":1,"observedGeneration":2,"replicas":0,"updatedReplicas":0,"availableReplicas":0,"unavailableReplicas":0,"details":{"message":"config change","causes":[{"type":"ConfigChange"}]},"conditions":[{"type":"Available","status":"False","lastUpdateTime":"2018-01-30T10:22:22Z","lastTransitionTime":"2018-01-30T10:22:22Z","message":"Deployment config does not have minimum availability."}]}}
+    creationTimestamp: null
+    generation: 1
+    labels:
+      application: mapit
+      demo: mapit-template
+      openshift.io/deployment-config.name: mapit
+    name: mapit-1
+    ownerReferences:
+    - apiVersion: apps.openshift.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DeploymentConfig
+      name: mapit
+      uid: 759deb86-05a7-11e8-b864-000c29d0d489
+  spec:
+    replicas: 1
+    selector:
+      deployment: mapit-1
+      deploymentconfig: mapit
+    template:
+      metadata:
+        annotations:
+          openshift.io/deployment-config.latest-version: "1"
+          openshift.io/deployment-config.name: mapit
+          openshift.io/deployment.name: mapit-1
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          application: mapit
+          deployment: mapit-1
+          deploymentconfig: mapit
+      spec:
+        containers:
+        - env:
+          - name: POSTGRES_HOST
+            value: mapit-postgresql
+          - name: POSTGRES_DB
+            value: mapitdb
+          - name: POSTGRES_USER
+            value: userOGR
+          - name: POSTGRES_PASSWORD
+            value: ooUvRITI
+          image: docker-registry.default.svc:5000/mapit/mapit@sha256:7bd65d210db002b332c89cee44c3cf7fc47edda5e709d7597086eac16c6273b3
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: mapit
+          ports:
+          - containerPort: 8778
+            name: jolokia
+            protocol: TCP
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          - containerPort: 8443
+            name: https
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 75
+  status:
+    replicas: 0
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    annotations:
+      openshift.io/deployer-pod.completed-at: 2018-01-30 05:28:25 -0500 EST
+      openshift.io/deployer-pod.created-at: 2018-01-30 05:22:28 -0500 EST
+      openshift.io/deployer-pod.name: mapit-postgresql-1-deploy
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: mapit-postgresql
+      openshift.io/deployment.phase: Complete
+      openshift.io/deployment.replicas: "1"
+      openshift.io/deployment.status-reason: config change
+      openshift.io/encoded-deployment-config: |
+        {"kind":"DeploymentConfig","apiVersion":"v1","metadata":{"name":"mapit-postgresql","namespace":"mapit","selfLink":"/apis/apps.openshift.io/v1/namespaces/mapit/deploymentconfigs/mapit-postgresql","uid":"772082d6-05a7-11e8-b864-000c29d0d489","resourceVersion":"8518486","generation":2,"creationTimestamp":"2018-01-30T10:22:25Z","labels":{"application":"mapit","demo":"mapit-template"},"annotations":{"openshift.io/generated-by":"OpenShiftNewApp"}},"spec":{"strategy":{"type":"Recreate","recreateParams":{"timeoutSeconds":600},"resources":{},"activeDeadlineSeconds":21600},"triggers":[{"type":"ImageChange","imageChangeParams":{"automatic":true,"containerNames":["mapit-postgresql"],"from":{"kind":"ImageStreamTag","namespace":"openshift","name":"postgresql:latest"},"lastTriggeredImage":"registry.access.redhat.com/rhscl/postgresql-95-rhel7@sha256:33888776920331bc37ae17692bac043210305aa35ed444cf5eded89f8311d0d7"}},{"type":"ConfigChange"}],"replicas":1,"revisionHistoryLimit":10,"test":false,"selector":{"deploymentconfig":"mapit-postgresql"},"template":{"metadata":{"name":"mapit-postgresql","creationTimestamp":null,"labels":{"application":"mapit","deploymentconfig":"mapit-postgresql"},"annotations":{"openshift.io/generated-by":"OpenShiftNewApp"}},"spec":{"volumes":[{"name":"mapit-postgresql-data","emptyDir":{}}],"containers":[{"name":"mapit-postgresql","image":"registry.access.redhat.com/rhscl/postgresql-95-rhel7@sha256:33888776920331bc37ae17692bac043210305aa35ed444cf5eded89f8311d0d7","ports":[{"containerPort":5432,"protocol":"TCP"}],"env":[{"name":"POSTGRESQL_USER","value":"userOGR"},{"name":"POSTGRESQL_PASSWORD","value":"ooUvRITI"},{"name":"POSTGRESQL_DATABASE","value":"mapitdb"}],"resources":{"limits":{"cpu":"500m","memory":"512Mi"},"requests":{"cpu":"50m","memory":"256Mi"}},"volumeMounts":[{"name":"mapit-postgresql-data","mountPath":"/var/lib/pgsql/data"}],"livenessProbe":{"tcpSocket":{"port":5432},"initialDelaySeconds":30,"timeoutSeconds":1,"periodSeconds":10,"successThreshold":1,"failureThreshold":10},"readinessProbe":{"exec":{"command":["/bin/sh","-i","-c","psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c 'SELECT 1'"]},"initialDelaySeconds":5,"timeoutSeconds":1,"periodSeconds":5,"successThreshold":1,"failureThreshold":10},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":60,"dnsPolicy":"ClusterFirst","securityContext":{},"schedulerName":"default-scheduler"}}},"status":{"latestVersion":1,"observedGeneration":2,"replicas":0,"updatedReplicas":0,"availableReplicas":0,"unavailableReplicas":0,"details":{"message":"config change","causes":[{"type":"ConfigChange"}]},"conditions":[{"type":"Available","status":"False","lastUpdateTime":"2018-01-30T10:22:25Z","lastTransitionTime":"2018-01-30T10:22:25Z","message":"Deployment config does not have minimum availability."}]}}
+    creationTimestamp: null
+    generation: 1
+    labels:
+      application: mapit
+      demo: mapit-template
+      openshift.io/deployment-config.name: mapit-postgresql
+    name: mapit-postgresql-1
+    ownerReferences:
+    - apiVersion: apps.openshift.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DeploymentConfig
+      name: mapit-postgresql
+      uid: 772082d6-05a7-11e8-b864-000c29d0d489
+  spec:
+    replicas: 1
+    selector:
+      deployment: mapit-postgresql-1
+      deploymentconfig: mapit-postgresql
+    template:
+      metadata:
+        annotations:
+          openshift.io/deployment-config.latest-version: "1"
+          openshift.io/deployment-config.name: mapit-postgresql
+          openshift.io/deployment.name: mapit-postgresql-1
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          application: mapit
+          deployment: mapit-postgresql-1
+          deploymentconfig: mapit-postgresql
+      spec:
+        containers:
+        - env:
+          - name: POSTGRESQL_USER
+            value: userOGR
+          - name: POSTGRESQL_PASSWORD
+            value: ooUvRITI
+          - name: POSTGRESQL_DATABASE
+            value: mapitdb
+          image: registry.access.redhat.com/rhscl/postgresql-95-rhel7@sha256:33888776920331bc37ae17692bac043210305aa35ed444cf5eded89f8311d0d7
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 10
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 5432
+            timeoutSeconds: 1
+          name: mapit-postgresql
+          ports:
+          - containerPort: 5432
+            protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -i
+              - -c
+              - psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c
+                'SELECT 1'
+            failureThreshold: 10
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 50m
+              memory: 256Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/pgsql/data
+            name: mapit-postgresql-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 60
+        volumes:
+        - emptyDir: {}
+          name: mapit-postgresql-data
+  status:
+    replicas: 0
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/original-replicas: "1"
+      openshift.io/deployer-pod.completed-at: 2018-01-30 05:33:18 -0500 EST
+      openshift.io/deployer-pod.created-at: 2018-01-30 05:32:41 -0500 EST
+      openshift.io/deployer-pod.name: ui-1-deploy
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: ui
+      openshift.io/deployment.phase: Complete
+      openshift.io/deployment.replicas: "1"
+      openshift.io/deployment.status-reason: config change
+      openshift.io/encoded-deployment-config: |
+        {"kind":"DeploymentConfig","apiVersion":"v1","metadata":{"name":"ui","namespace":"mapit","selfLink":"/apis/apps.openshift.io/v1/namespaces/mapit/deploymentconfigs/ui","uid":"5b3082d0-05a8-11e8-97ac-000c29f32a28","resourceVersion":"8522111","generation":2,"creationTimestamp":"2018-01-30T10:28:47Z","labels":{"template":"httpd-example"},"annotations":{"description":"Defines how to deploy the application server","template.alpha.openshift.io/wait-for-ready":"true"},"ownerReferences":[{"apiVersion":"template.openshift.io/v1","kind":"TemplateInstance","name":"7ba407d7-d3ad-4702-8ccb-92b15763979c","uid":"5a9b733a-05a8-11e8-97ac-000c29f32a28","blockOwnerDeletion":true}]},"spec":{"strategy":{"type":"Rolling","rollingParams":{"updatePeriodSeconds":1,"intervalSeconds":1,"timeoutSeconds":600,"maxUnavailable":"25%","maxSurge":"25%"},"resources":{},"activeDeadlineSeconds":21600},"triggers":[{"type":"ImageChange","imageChangeParams":{"automatic":true,"containerNames":["httpd-example"],"from":{"kind":"ImageStreamTag","namespace":"mapit","name":"ui:latest"},"lastTriggeredImage":"docker-registry.default.svc:5000/mapit/ui@sha256:b3340c366c7a46f8acb18bbecbedd49af48aa8dd335fc9e899e287b409558e06"}},{"type":"ConfigChange"}],"replicas":1,"test":false,"selector":{"name":"ui"},"template":{"metadata":{"name":"ui","creationTimestamp":null,"labels":{"name":"ui"}},"spec":{"containers":[{"name":"httpd-example","image":"docker-registry.default.svc:5000/mapit/ui@sha256:b3340c366c7a46f8acb18bbecbedd49af48aa8dd335fc9e899e287b409558e06","ports":[{"containerPort":8080,"protocol":"TCP"}],"resources":{"limits":{"memory":"512Mi"}},"livenessProbe":{"httpGet":{"path":"/","port":8080,"scheme":"HTTP"},"initialDelaySeconds":30,"timeoutSeconds":3,"periodSeconds":10,"successThreshold":1,"failureThreshold":3},"readinessProbe":{"httpGet":{"path":"/","port":8080,"scheme":"HTTP"},"initialDelaySeconds":3,"timeoutSeconds":3,"periodSeconds":10,"successThreshold":1,"failureThreshold":3},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"IfNotPresent"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"schedulerName":"default-scheduler"}}},"status":{"latestVersion":1,"observedGeneration":2,"replicas":0,"updatedReplicas":0,"availableReplicas":0,"unavailableReplicas":0,"details":{"message":"config change","causes":[{"type":"ConfigChange"}]},"conditions":[{"type":"Available","status":"False","lastUpdateTime":"2018-01-30T10:28:48Z","lastTransitionTime":"2018-01-30T10:28:48Z","message":"Deployment config does not have minimum availability."}]}}
+    creationTimestamp: null
+    generation: 1
+    labels:
+      openshift.io/deployment-config.name: ui
+      template: httpd-example
+    name: ui-1
+    ownerReferences:
+    - apiVersion: apps.openshift.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DeploymentConfig
+      name: ui
+      uid: 5b3082d0-05a8-11e8-97ac-000c29f32a28
+  spec:
+    replicas: 0
+    selector:
+      deployment: ui-1
+      deploymentconfig: ui
+      name: ui
+    template:
+      metadata:
+        annotations:
+          openshift.io/deployment-config.latest-version: "1"
+          openshift.io/deployment-config.name: ui
+          openshift.io/deployment.name: ui-1
+        creationTimestamp: null
+        labels:
+          deployment: ui-1
+          deploymentconfig: ui
+          name: ui
+      spec:
+        containers:
+        - image: docker-registry.default.svc:5000/mapit/ui@sha256:b3340c366c7a46f8acb18bbecbedd49af48aa8dd335fc9e899e287b409558e06
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          name: httpd-example
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              memory: 512Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    replicas: 0
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    annotations:
+      openshift.io/deployer-pod.completed-at: 2018-01-30 05:45:37 -0500 EST
+      openshift.io/deployer-pod.created-at: 2018-01-30 05:44:44 -0500 EST
+      openshift.io/deployer-pod.name: ui-2-deploy
+      openshift.io/deployment-config.latest-version: "2"
+      openshift.io/deployment-config.name: ui
+      openshift.io/deployment.phase: Complete
+      openshift.io/deployment.replicas: ""
+      openshift.io/deployment.status-reason: image change
+      openshift.io/encoded-deployment-config: |
+        {"kind":"DeploymentConfig","apiVersion":"v1","metadata":{"name":"ui","namespace":"mapit","selfLink":"/apis/apps.openshift.io/v1/namespaces/mapit/deploymentconfigs/ui","uid":"5b3082d0-05a8-11e8-97ac-000c29f32a28","resourceVersion":"8526276","generation":3,"creationTimestamp":"2018-01-30T10:28:47Z","labels":{"template":"httpd-example"},"annotations":{"description":"Defines how to deploy the application server","template.alpha.openshift.io/wait-for-ready":"true"},"ownerReferences":[{"apiVersion":"template.openshift.io/v1","kind":"TemplateInstance","name":"7ba407d7-d3ad-4702-8ccb-92b15763979c","uid":"5a9b733a-05a8-11e8-97ac-000c29f32a28","blockOwnerDeletion":true}]},"spec":{"strategy":{"type":"Rolling","rollingParams":{"updatePeriodSeconds":1,"intervalSeconds":1,"timeoutSeconds":600,"maxUnavailable":"25%","maxSurge":"25%"},"resources":{},"activeDeadlineSeconds":21600},"triggers":[{"type":"ImageChange","imageChangeParams":{"automatic":true,"containerNames":["httpd-example"],"from":{"kind":"ImageStreamTag","namespace":"mapit","name":"ui:latest"},"lastTriggeredImage":"docker-registry.default.svc:5000/mapit/ui@sha256:a3eb8571fadcd7d175be21a457347ef1bb2e6961c6659dbd82e71bb5329e83ce"}},{"type":"ConfigChange"}],"replicas":1,"test":false,"selector":{"name":"ui"},"template":{"metadata":{"name":"ui","creationTimestamp":null,"labels":{"name":"ui"}},"spec":{"containers":[{"name":"httpd-example","image":"docker-registry.default.svc:5000/mapit/ui@sha256:a3eb8571fadcd7d175be21a457347ef1bb2e6961c6659dbd82e71bb5329e83ce","ports":[{"containerPort":8080,"protocol":"TCP"}],"resources":{"limits":{"memory":"512Mi"}},"livenessProbe":{"httpGet":{"path":"/","port":8080,"scheme":"HTTP"},"initialDelaySeconds":30,"timeoutSeconds":3,"periodSeconds":10,"successThreshold":1,"failureThreshold":3},"readinessProbe":{"httpGet":{"path":"/","port":8080,"scheme":"HTTP"},"initialDelaySeconds":3,"timeoutSeconds":3,"periodSeconds":10,"successThreshold":1,"failureThreshold":3},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"IfNotPresent"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"schedulerName":"default-scheduler"}}},"status":{"latestVersion":2,"observedGeneration":3,"replicas":1,"updatedReplicas":0,"availableReplicas":1,"unavailableReplicas":0,"details":{"message":"image change","causes":[{"type":"ImageChange","imageTrigger":{"from":{"kind":"DockerImage","name":"docker-registry.default.svc:5000/mapit/ui@sha256:a3eb8571fadcd7d175be21a457347ef1bb2e6961c6659dbd82e71bb5329e83ce"}}}]},"conditions":[{"type":"Available","status":"True","lastUpdateTime":"2018-01-30T10:33:18Z","lastTransitionTime":"2018-01-30T10:33:18Z","message":"Deployment config has minimum availability."},{"type":"Progressing","status":"True","lastUpdateTime":"2018-01-30T10:33:19Z","lastTransitionTime":"2018-01-30T10:32:58Z","reason":"NewReplicationControllerAvailable","message":"replication controller \"ui-1\" successfully rolled out"}],"readyReplicas":1}}
+    creationTimestamp: null
+    generation: 1
+    labels:
+      openshift.io/deployment-config.name: ui
+      template: httpd-example
+    name: ui-2
+    ownerReferences:
+    - apiVersion: apps.openshift.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DeploymentConfig
+      name: ui
+      uid: 5b3082d0-05a8-11e8-97ac-000c29f32a28
+  spec:
+    replicas: 1
+    selector:
+      deployment: ui-2
+      deploymentconfig: ui
+      name: ui
+    template:
+      metadata:
+        annotations:
+          openshift.io/deployment-config.latest-version: "2"
+          openshift.io/deployment-config.name: ui
+          openshift.io/deployment.name: ui-2
+        creationTimestamp: null
+        labels:
+          deployment: ui-2
+          deploymentconfig: ui
+          name: ui
+      spec:
+        containers:
+        - image: docker-registry.default.svc:5000/mapit/ui@sha256:a3eb8571fadcd7d175be21a457347ef1bb2e6961c6659dbd82e71bb5329e83ce
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          name: httpd-example
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              memory: 512Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    replicas: 0
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    labels:
+      application: mapit
+      demo: mapit-template
+    name: mapit
+  spec:
+    host: mapit-mapit.apps.demo.openshift.fr
+    to:
+      kind: Service
+      name: mapit
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2018-01-30T10:22:24Z
+        status: "True"
+        type: Admitted
+      host: mapit-mapit.apps.demo.openshift.fr
+      routerName: router
+      wildcardPolicy: None
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    labels:
+      template: httpd-example
+    name: ui
+    ownerReferences:
+    - apiVersion: template.openshift.io/v1
+      blockOwnerDeletion: true
+      kind: TemplateInstance
+      name: 7ba407d7-d3ad-4702-8ccb-92b15763979c
+      uid: 5a9b733a-05a8-11e8-97ac-000c29f32a28
+  spec:
+    host: ui-mapit.apps.demo.openshift.fr
+    to:
+      kind: Service
+      name: ui
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2018-01-30T10:28:47Z
+        status: "True"
+        type: Admitted
+      host: ui-mapit.apps.demo.openshift.fr
+      routerName: router
+      wildcardPolicy: None
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: mapit
+      application: mapit
+      demo: mapit-template
+    name: mapit
+  spec:
+    ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: mapit
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      application: mapit
+      demo: mapit-template
+    name: mapit-postgresql
+  spec:
+    ports:
+    - port: 5432
+      protocol: TCP
+      targetPort: 5432
+    selector:
+      deploymentconfig: mapit-postgresql
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods
+    creationTimestamp: null
+    labels:
+      template: httpd-example
+    name: ui
+    ownerReferences:
+    - apiVersion: template.openshift.io/v1
+      blockOwnerDeletion: true
+      kind: TemplateInstance
+      name: 7ba407d7-d3ad-4702-8ccb-92b15763979c
+      uid: 5a9b733a-05a8-11e8-97ac-000c29f32a28
+  spec:
+    ports:
+    - name: web
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      name: ui
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      kubernetes.io/created-by: |
+        {"kind":"SerializedReference","apiVersion":"v1","reference":{"kind":"ReplicationController","namespace":"mapit","name":"mapit-1","uid":"7910c1dc-05a9-11e8-97ac-000c29f32a28","apiVersion":"v1","resourceVersion":"8523743"}}
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: mapit
+      openshift.io/deployment.name: mapit-1
+      openshift.io/generated-by: OpenShiftNewApp
+      openshift.io/scc: restricted
+    creationTimestamp: null
+    generateName: mapit-1-
+    labels:
+      application: mapit
+      deployment: mapit-1
+      deploymentconfig: mapit
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicationController
+      name: mapit-1
+      uid: 7910c1dc-05a9-11e8-97ac-000c29f32a28
+  spec:
+    containers:
+    - env:
+      - name: POSTGRES_HOST
+        value: mapit-postgresql
+      - name: POSTGRES_DB
+        value: mapitdb
+      - name: POSTGRES_USER
+        value: userOGR
+      - name: POSTGRES_PASSWORD
+        value: ooUvRITI
+      image: docker-registry.default.svc:5000/mapit/mapit@sha256:7bd65d210db002b332c89cee44c3cf7fc47edda5e709d7597086eac16c6273b3
+      imagePullPolicy: Always
+      livenessProbe:
+        failureThreshold: 10
+        httpGet:
+          path: /health
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 15
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: mapit
+      ports:
+      - containerPort: 8778
+        name: jolokia
+        protocol: TCP
+      - containerPort: 8080
+        name: http
+        protocol: TCP
+      - containerPort: 8443
+        name: https
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 10
+        httpGet:
+          path: /health
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 15
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources: {}
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        privileged: false
+        runAsUser: 1000080000
+        seLinuxOptions:
+          level: s0:c9,c4
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-l6zdn
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    imagePullSecrets:
+    - name: default-dockercfg-5tn5t
+    nodeName: node1.openshift.local
+    nodeSelector:
+      env: app
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000080000
+      seLinuxOptions:
+        level: s0:c9,c4
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 75
+    volumes:
+    - name: default-token-l6zdn
+      secret:
+        defaultMode: 420
+        secretName: default-token-l6zdn
+  status:
+    phase: Pending
+    qosClass: BestEffort
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      openshift.io/build.name: mapit-1
+      openshift.io/scc: privileged
+      pod.alpha.kubernetes.io/init-containers: '[{"name":"git-clone","image":"openshift3/ose-sti-builder:v3.7.14","command":["openshift-git-clone"],"args":["--loglevel=0"],"env":[{"name":"BUILD","value":"{\"kind\":\"Build\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"mapit-1\",\"namespace\":\"mapit\",\"selfLink\":\"/apis/build.openshift.io/v1/namespaces/mapit/builds/mapit-1\",\"uid\":\"75d813c3-05a7-11e8-97ac-000c29f32a28\",\"resourceVersion\":\"8518462\",\"creationTimestamp\":\"2018-01-30T10:22:22Z\",\"labels\":{\"application\":\"mapit\",\"buildconfig\":\"mapit\",\"demo\":\"mapit-template\",\"openshift.io/build-config.name\":\"mapit\",\"openshift.io/build.start-policy\":\"Serial\"},\"annotations\":{\"openshift.io/build-config.name\":\"mapit\",\"openshift.io/build.number\":\"1\"},\"ownerReferences\":[{\"apiVersion\":\"build.openshift.io/v1\",\"kind\":\"BuildConfig\",\"name\":\"mapit\",\"uid\":\"753e99f0-05a7-11e8-b864-000c29d0d489\",\"controller\":true}]},\"spec\":{\"serviceAccount\":\"builder\",\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"https://github.com/siamaksade/mapit-spring.git\",\"ref\":\"master\"}},\"strategy\":{\"type\":\"Source\",\"sourceStrategy\":{\"from\":{\"kind\":\"DockerImage\",\"name\":\"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5\"},\"env\":[{\"name\":\"MAVEN_MIRROR_URL\"}]}},\"output\":{\"to\":{\"kind\":\"DockerImage\",\"name\":\"docker-registry.default.svc:5000/mapit/mapit:latest\"},\"pushSecret\":{\"name\":\"builder-dockercfg-ckdqd\"}},\"resources\":{},\"postCommit\":{},\"nodeSelector\":null,\"triggeredBy\":[{\"message\":\"Image
+        change\",\"imageChangeBuild\":{\"imageID\":\"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5\",\"fromRef\":{\"kind\":\"ImageStreamTag\",\"namespace\":\"openshift\",\"name\":\"redhat-openjdk18-openshift:1.1\"}}}]},\"status\":{\"phase\":\"New\",\"outputDockerImageReference\":\"docker-registry.default.svc:5000/mapit/mapit:latest\",\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"mapit\",\"name\":\"mapit\"},\"output\":{}}}\n"},{"name":"SOURCE_REPOSITORY","value":"https://github.com/siamaksade/mapit-spring.git"},{"name":"SOURCE_URI","value":"https://github.com/siamaksade/mapit-spring.git"},{"name":"SOURCE_REF","value":"master"},{"name":"ORIGIN_VERSION","value":"v3.7.14"},{"name":"ALLOWED_UIDS","value":"1-"},{"name":"DROP_CAPS","value":"KILL,MKNOD,SETGID,SETUID"}],"resources":{},"volumeMounts":[{"name":"buildworkdir","mountPath":"/tmp/build"},{"name":"builder-token-sg5vl","readOnly":true,"mountPath":"/var/run/secrets/kubernetes.io/serviceaccount"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":false}},{"name":"manage-dockerfile","image":"openshift3/ose-sti-builder:v3.7.14","command":["openshift-manage-dockerfile"],"args":["--loglevel=0"],"env":[{"name":"BUILD","value":"{\"kind\":\"Build\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"mapit-1\",\"namespace\":\"mapit\",\"selfLink\":\"/apis/build.openshift.io/v1/namespaces/mapit/builds/mapit-1\",\"uid\":\"75d813c3-05a7-11e8-97ac-000c29f32a28\",\"resourceVersion\":\"8518462\",\"creationTimestamp\":\"2018-01-30T10:22:22Z\",\"labels\":{\"application\":\"mapit\",\"buildconfig\":\"mapit\",\"demo\":\"mapit-template\",\"openshift.io/build-config.name\":\"mapit\",\"openshift.io/build.start-policy\":\"Serial\"},\"annotations\":{\"openshift.io/build-config.name\":\"mapit\",\"openshift.io/build.number\":\"1\"},\"ownerReferences\":[{\"apiVersion\":\"build.openshift.io/v1\",\"kind\":\"BuildConfig\",\"name\":\"mapit\",\"uid\":\"753e99f0-05a7-11e8-b864-000c29d0d489\",\"controller\":true}]},\"spec\":{\"serviceAccount\":\"builder\",\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"https://github.com/siamaksade/mapit-spring.git\",\"ref\":\"master\"}},\"strategy\":{\"type\":\"Source\",\"sourceStrategy\":{\"from\":{\"kind\":\"DockerImage\",\"name\":\"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5\"},\"env\":[{\"name\":\"MAVEN_MIRROR_URL\"}]}},\"output\":{\"to\":{\"kind\":\"DockerImage\",\"name\":\"docker-registry.default.svc:5000/mapit/mapit:latest\"},\"pushSecret\":{\"name\":\"builder-dockercfg-ckdqd\"}},\"resources\":{},\"postCommit\":{},\"nodeSelector\":null,\"triggeredBy\":[{\"message\":\"Image
+        change\",\"imageChangeBuild\":{\"imageID\":\"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5\",\"fromRef\":{\"kind\":\"ImageStreamTag\",\"namespace\":\"openshift\",\"name\":\"redhat-openjdk18-openshift:1.1\"}}}]},\"status\":{\"phase\":\"New\",\"outputDockerImageReference\":\"docker-registry.default.svc:5000/mapit/mapit:latest\",\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"mapit\",\"name\":\"mapit\"},\"output\":{}}}\n"},{"name":"SOURCE_REPOSITORY","value":"https://github.com/siamaksade/mapit-spring.git"},{"name":"SOURCE_URI","value":"https://github.com/siamaksade/mapit-spring.git"},{"name":"SOURCE_REF","value":"master"},{"name":"ORIGIN_VERSION","value":"v3.7.14"},{"name":"ALLOWED_UIDS","value":"1-"},{"name":"DROP_CAPS","value":"KILL,MKNOD,SETGID,SETUID"}],"resources":{},"volumeMounts":[{"name":"buildworkdir","mountPath":"/tmp/build"},{"name":"builder-token-sg5vl","readOnly":true,"mountPath":"/var/run/secrets/kubernetes.io/serviceaccount"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":false}}]'
+      pod.beta.kubernetes.io/init-containers: '[{"name":"git-clone","image":"openshift3/ose-sti-builder:v3.7.14","command":["openshift-git-clone"],"args":["--loglevel=0"],"env":[{"name":"BUILD","value":"{\"kind\":\"Build\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"mapit-1\",\"namespace\":\"mapit\",\"selfLink\":\"/apis/build.openshift.io/v1/namespaces/mapit/builds/mapit-1\",\"uid\":\"75d813c3-05a7-11e8-97ac-000c29f32a28\",\"resourceVersion\":\"8518462\",\"creationTimestamp\":\"2018-01-30T10:22:22Z\",\"labels\":{\"application\":\"mapit\",\"buildconfig\":\"mapit\",\"demo\":\"mapit-template\",\"openshift.io/build-config.name\":\"mapit\",\"openshift.io/build.start-policy\":\"Serial\"},\"annotations\":{\"openshift.io/build-config.name\":\"mapit\",\"openshift.io/build.number\":\"1\"},\"ownerReferences\":[{\"apiVersion\":\"build.openshift.io/v1\",\"kind\":\"BuildConfig\",\"name\":\"mapit\",\"uid\":\"753e99f0-05a7-11e8-b864-000c29d0d489\",\"controller\":true}]},\"spec\":{\"serviceAccount\":\"builder\",\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"https://github.com/siamaksade/mapit-spring.git\",\"ref\":\"master\"}},\"strategy\":{\"type\":\"Source\",\"sourceStrategy\":{\"from\":{\"kind\":\"DockerImage\",\"name\":\"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5\"},\"env\":[{\"name\":\"MAVEN_MIRROR_URL\"}]}},\"output\":{\"to\":{\"kind\":\"DockerImage\",\"name\":\"docker-registry.default.svc:5000/mapit/mapit:latest\"},\"pushSecret\":{\"name\":\"builder-dockercfg-ckdqd\"}},\"resources\":{},\"postCommit\":{},\"nodeSelector\":null,\"triggeredBy\":[{\"message\":\"Image
+        change\",\"imageChangeBuild\":{\"imageID\":\"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5\",\"fromRef\":{\"kind\":\"ImageStreamTag\",\"namespace\":\"openshift\",\"name\":\"redhat-openjdk18-openshift:1.1\"}}}]},\"status\":{\"phase\":\"New\",\"outputDockerImageReference\":\"docker-registry.default.svc:5000/mapit/mapit:latest\",\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"mapit\",\"name\":\"mapit\"},\"output\":{}}}\n"},{"name":"SOURCE_REPOSITORY","value":"https://github.com/siamaksade/mapit-spring.git"},{"name":"SOURCE_URI","value":"https://github.com/siamaksade/mapit-spring.git"},{"name":"SOURCE_REF","value":"master"},{"name":"ORIGIN_VERSION","value":"v3.7.14"},{"name":"ALLOWED_UIDS","value":"1-"},{"name":"DROP_CAPS","value":"KILL,MKNOD,SETGID,SETUID"}],"resources":{},"volumeMounts":[{"name":"buildworkdir","mountPath":"/tmp/build"},{"name":"builder-token-sg5vl","readOnly":true,"mountPath":"/var/run/secrets/kubernetes.io/serviceaccount"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":false}},{"name":"manage-dockerfile","image":"openshift3/ose-sti-builder:v3.7.14","command":["openshift-manage-dockerfile"],"args":["--loglevel=0"],"env":[{"name":"BUILD","value":"{\"kind\":\"Build\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"mapit-1\",\"namespace\":\"mapit\",\"selfLink\":\"/apis/build.openshift.io/v1/namespaces/mapit/builds/mapit-1\",\"uid\":\"75d813c3-05a7-11e8-97ac-000c29f32a28\",\"resourceVersion\":\"8518462\",\"creationTimestamp\":\"2018-01-30T10:22:22Z\",\"labels\":{\"application\":\"mapit\",\"buildconfig\":\"mapit\",\"demo\":\"mapit-template\",\"openshift.io/build-config.name\":\"mapit\",\"openshift.io/build.start-policy\":\"Serial\"},\"annotations\":{\"openshift.io/build-config.name\":\"mapit\",\"openshift.io/build.number\":\"1\"},\"ownerReferences\":[{\"apiVersion\":\"build.openshift.io/v1\",\"kind\":\"BuildConfig\",\"name\":\"mapit\",\"uid\":\"753e99f0-05a7-11e8-b864-000c29d0d489\",\"controller\":true}]},\"spec\":{\"serviceAccount\":\"builder\",\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"https://github.com/siamaksade/mapit-spring.git\",\"ref\":\"master\"}},\"strategy\":{\"type\":\"Source\",\"sourceStrategy\":{\"from\":{\"kind\":\"DockerImage\",\"name\":\"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5\"},\"env\":[{\"name\":\"MAVEN_MIRROR_URL\"}]}},\"output\":{\"to\":{\"kind\":\"DockerImage\",\"name\":\"docker-registry.default.svc:5000/mapit/mapit:latest\"},\"pushSecret\":{\"name\":\"builder-dockercfg-ckdqd\"}},\"resources\":{},\"postCommit\":{},\"nodeSelector\":null,\"triggeredBy\":[{\"message\":\"Image
+        change\",\"imageChangeBuild\":{\"imageID\":\"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5\",\"fromRef\":{\"kind\":\"ImageStreamTag\",\"namespace\":\"openshift\",\"name\":\"redhat-openjdk18-openshift:1.1\"}}}]},\"status\":{\"phase\":\"New\",\"outputDockerImageReference\":\"docker-registry.default.svc:5000/mapit/mapit:latest\",\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"mapit\",\"name\":\"mapit\"},\"output\":{}}}\n"},{"name":"SOURCE_REPOSITORY","value":"https://github.com/siamaksade/mapit-spring.git"},{"name":"SOURCE_URI","value":"https://github.com/siamaksade/mapit-spring.git"},{"name":"SOURCE_REF","value":"master"},{"name":"ORIGIN_VERSION","value":"v3.7.14"},{"name":"ALLOWED_UIDS","value":"1-"},{"name":"DROP_CAPS","value":"KILL,MKNOD,SETGID,SETUID"}],"resources":{},"volumeMounts":[{"name":"buildworkdir","mountPath":"/tmp/build"},{"name":"builder-token-sg5vl","readOnly":true,"mountPath":"/var/run/secrets/kubernetes.io/serviceaccount"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":false}}]'
+    creationTimestamp: null
+    labels:
+      openshift.io/build.name: mapit-1
+    name: mapit-1-build
+    ownerReferences:
+    - apiVersion: build.openshift.io/v1
+      controller: true
+      kind: Build
+      name: mapit-1
+      uid: 75d813c3-05a7-11e8-97ac-000c29f32a28
+  spec:
+    containers:
+    - args:
+      - --loglevel=0
+      command:
+      - openshift-sti-build
+      env:
+      - name: BUILD
+        value: |
+          {"kind":"Build","apiVersion":"v1","metadata":{"name":"mapit-1","namespace":"mapit","selfLink":"/apis/build.openshift.io/v1/namespaces/mapit/builds/mapit-1","uid":"75d813c3-05a7-11e8-97ac-000c29f32a28","resourceVersion":"8518462","creationTimestamp":"2018-01-30T10:22:22Z","labels":{"application":"mapit","buildconfig":"mapit","demo":"mapit-template","openshift.io/build-config.name":"mapit","openshift.io/build.start-policy":"Serial"},"annotations":{"openshift.io/build-config.name":"mapit","openshift.io/build.number":"1"},"ownerReferences":[{"apiVersion":"build.openshift.io/v1","kind":"BuildConfig","name":"mapit","uid":"753e99f0-05a7-11e8-b864-000c29d0d489","controller":true}]},"spec":{"serviceAccount":"builder","source":{"type":"Git","git":{"uri":"https://github.com/siamaksade/mapit-spring.git","ref":"master"}},"strategy":{"type":"Source","sourceStrategy":{"from":{"kind":"DockerImage","name":"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5"},"env":[{"name":"MAVEN_MIRROR_URL"}]}},"output":{"to":{"kind":"DockerImage","name":"docker-registry.default.svc:5000/mapit/mapit:latest"},"pushSecret":{"name":"builder-dockercfg-ckdqd"}},"resources":{},"postCommit":{},"nodeSelector":null,"triggeredBy":[{"message":"Image change","imageChangeBuild":{"imageID":"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5","fromRef":{"kind":"ImageStreamTag","namespace":"openshift","name":"redhat-openjdk18-openshift:1.1"}}}]},"status":{"phase":"New","outputDockerImageReference":"docker-registry.default.svc:5000/mapit/mapit:latest","config":{"kind":"BuildConfig","namespace":"mapit","name":"mapit"},"output":{}}}
+      - name: SOURCE_REPOSITORY
+        value: https://github.com/siamaksade/mapit-spring.git
+      - name: SOURCE_URI
+        value: https://github.com/siamaksade/mapit-spring.git
+      - name: SOURCE_REF
+        value: master
+      - name: ORIGIN_VERSION
+        value: v3.7.14
+      - name: ALLOWED_UIDS
+        value: 1-
+      - name: DROP_CAPS
+        value: KILL,MKNOD,SETGID,SETUID
+      - name: PUSH_DOCKERCFG_PATH
+        value: /var/run/secrets/openshift.io/push
+      image: openshift3/ose-sti-builder:v3.7.14
+      imagePullPolicy: IfNotPresent
+      name: sti-build
+      resources: {}
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /tmp/build
+        name: buildworkdir
+      - mountPath: /var/run/docker.sock
+        name: docker-socket
+      - mountPath: /var/run/crio.sock
+        name: crio-socket
+      - mountPath: /var/run/secrets/openshift.io/push
+        name: builder-dockercfg-ckdqd-push
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: builder-token-sg5vl
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    imagePullSecrets:
+    - name: builder-dockercfg-ckdqd
+    initContainers:
+    - args:
+      - --loglevel=0
+      command:
+      - openshift-git-clone
+      env:
+      - name: BUILD
+        value: |
+          {"kind":"Build","apiVersion":"v1","metadata":{"name":"mapit-1","namespace":"mapit","selfLink":"/apis/build.openshift.io/v1/namespaces/mapit/builds/mapit-1","uid":"75d813c3-05a7-11e8-97ac-000c29f32a28","resourceVersion":"8518462","creationTimestamp":"2018-01-30T10:22:22Z","labels":{"application":"mapit","buildconfig":"mapit","demo":"mapit-template","openshift.io/build-config.name":"mapit","openshift.io/build.start-policy":"Serial"},"annotations":{"openshift.io/build-config.name":"mapit","openshift.io/build.number":"1"},"ownerReferences":[{"apiVersion":"build.openshift.io/v1","kind":"BuildConfig","name":"mapit","uid":"753e99f0-05a7-11e8-b864-000c29d0d489","controller":true}]},"spec":{"serviceAccount":"builder","source":{"type":"Git","git":{"uri":"https://github.com/siamaksade/mapit-spring.git","ref":"master"}},"strategy":{"type":"Source","sourceStrategy":{"from":{"kind":"DockerImage","name":"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5"},"env":[{"name":"MAVEN_MIRROR_URL"}]}},"output":{"to":{"kind":"DockerImage","name":"docker-registry.default.svc:5000/mapit/mapit:latest"},"pushSecret":{"name":"builder-dockercfg-ckdqd"}},"resources":{},"postCommit":{},"nodeSelector":null,"triggeredBy":[{"message":"Image change","imageChangeBuild":{"imageID":"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5","fromRef":{"kind":"ImageStreamTag","namespace":"openshift","name":"redhat-openjdk18-openshift:1.1"}}}]},"status":{"phase":"New","outputDockerImageReference":"docker-registry.default.svc:5000/mapit/mapit:latest","config":{"kind":"BuildConfig","namespace":"mapit","name":"mapit"},"output":{}}}
+      - name: SOURCE_REPOSITORY
+        value: https://github.com/siamaksade/mapit-spring.git
+      - name: SOURCE_URI
+        value: https://github.com/siamaksade/mapit-spring.git
+      - name: SOURCE_REF
+        value: master
+      - name: ORIGIN_VERSION
+        value: v3.7.14
+      - name: ALLOWED_UIDS
+        value: 1-
+      - name: DROP_CAPS
+        value: KILL,MKNOD,SETGID,SETUID
+      image: openshift3/ose-sti-builder:v3.7.14
+      imagePullPolicy: IfNotPresent
+      name: git-clone
+      resources: {}
+      securityContext:
+        privileged: false
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /tmp/build
+        name: buildworkdir
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: builder-token-sg5vl
+        readOnly: true
+    - args:
+      - --loglevel=0
+      command:
+      - openshift-manage-dockerfile
+      env:
+      - name: BUILD
+        value: |
+          {"kind":"Build","apiVersion":"v1","metadata":{"name":"mapit-1","namespace":"mapit","selfLink":"/apis/build.openshift.io/v1/namespaces/mapit/builds/mapit-1","uid":"75d813c3-05a7-11e8-97ac-000c29f32a28","resourceVersion":"8518462","creationTimestamp":"2018-01-30T10:22:22Z","labels":{"application":"mapit","buildconfig":"mapit","demo":"mapit-template","openshift.io/build-config.name":"mapit","openshift.io/build.start-policy":"Serial"},"annotations":{"openshift.io/build-config.name":"mapit","openshift.io/build.number":"1"},"ownerReferences":[{"apiVersion":"build.openshift.io/v1","kind":"BuildConfig","name":"mapit","uid":"753e99f0-05a7-11e8-b864-000c29d0d489","controller":true}]},"spec":{"serviceAccount":"builder","source":{"type":"Git","git":{"uri":"https://github.com/siamaksade/mapit-spring.git","ref":"master"}},"strategy":{"type":"Source","sourceStrategy":{"from":{"kind":"DockerImage","name":"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5"},"env":[{"name":"MAVEN_MIRROR_URL"}]}},"output":{"to":{"kind":"DockerImage","name":"docker-registry.default.svc:5000/mapit/mapit:latest"},"pushSecret":{"name":"builder-dockercfg-ckdqd"}},"resources":{},"postCommit":{},"nodeSelector":null,"triggeredBy":[{"message":"Image change","imageChangeBuild":{"imageID":"registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift@sha256:5ffd5b1ec8e4264cdd62a3063ee56e370a973e0777da9c8c6f3a5f12e22fe6d5","fromRef":{"kind":"ImageStreamTag","namespace":"openshift","name":"redhat-openjdk18-openshift:1.1"}}}]},"status":{"phase":"New","outputDockerImageReference":"docker-registry.default.svc:5000/mapit/mapit:latest","config":{"kind":"BuildConfig","namespace":"mapit","name":"mapit"},"output":{}}}
+      - name: SOURCE_REPOSITORY
+        value: https://github.com/siamaksade/mapit-spring.git
+      - name: SOURCE_URI
+        value: https://github.com/siamaksade/mapit-spring.git
+      - name: SOURCE_REF
+        value: master
+      - name: ORIGIN_VERSION
+        value: v3.7.14
+      - name: ALLOWED_UIDS
+        value: 1-
+      - name: DROP_CAPS
+        value: KILL,MKNOD,SETGID,SETUID
+      image: openshift3/ose-sti-builder:v3.7.14
+      imagePullPolicy: IfNotPresent
+      name: manage-dockerfile
+      resources: {}
+      securityContext:
+        privileged: false
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /tmp/build
+        name: buildworkdir
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: builder-token-sg5vl
+        readOnly: true
+    nodeName: node2.openshift.local
+    nodeSelector:
+      env: app
+    restartPolicy: Never
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: builder
+    serviceAccountName: builder
+    terminationGracePeriodSeconds: 30
+    volumes:
+    - emptyDir: {}
+      name: buildworkdir
+    - hostPath:
+        path: /var/run/docker.sock
+      name: docker-socket
+    - hostPath:
+        path: /var/run/crio.sock
+      name: crio-socket
+    - name: builder-dockercfg-ckdqd-push
+      secret:
+        defaultMode: 384
+        secretName: builder-dockercfg-ckdqd
+    - name: builder-token-sg5vl
+      secret:
+        defaultMode: 420
+        secretName: builder-token-sg5vl
+  status:
+    phase: Pending
+    qosClass: BestEffort
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      kubernetes.io/created-by: |
+        {"kind":"SerializedReference","apiVersion":"v1","reference":{"kind":"ReplicationController","namespace":"mapit","name":"mapit-postgresql-1","uid":"785d8f2d-05a7-11e8-97ac-000c29f32a28","apiVersion":"v1","resourceVersion":"8519248"}}
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: mapit-postgresql
+      openshift.io/deployment.name: mapit-postgresql-1
+      openshift.io/generated-by: OpenShiftNewApp
+      openshift.io/scc: restricted
+    creationTimestamp: null
+    generateName: mapit-postgresql-1-
+    labels:
+      application: mapit
+      deployment: mapit-postgresql-1
+      deploymentconfig: mapit-postgresql
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicationController
+      name: mapit-postgresql-1
+      uid: 785d8f2d-05a7-11e8-97ac-000c29f32a28
+  spec:
+    containers:
+    - env:
+      - name: POSTGRESQL_USER
+        value: userOGR
+      - name: POSTGRESQL_PASSWORD
+        value: ooUvRITI
+      - name: POSTGRESQL_DATABASE
+        value: mapitdb
+      image: registry.access.redhat.com/rhscl/postgresql-95-rhel7@sha256:33888776920331bc37ae17692bac043210305aa35ed444cf5eded89f8311d0d7
+      imagePullPolicy: Always
+      livenessProbe:
+        failureThreshold: 10
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        successThreshold: 1
+        tcpSocket:
+          port: 5432
+        timeoutSeconds: 1
+      name: mapit-postgresql
+      ports:
+      - containerPort: 5432
+        protocol: TCP
+      readinessProbe:
+        exec:
+          command:
+          - /bin/sh
+          - -i
+          - -c
+          - psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c 'SELECT
+            1'
+        failureThreshold: 10
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 50m
+          memory: 256Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        privileged: false
+        runAsUser: 1000080000
+        seLinuxOptions:
+          level: s0:c9,c4
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/lib/pgsql/data
+        name: mapit-postgresql-data
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-l6zdn
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    imagePullSecrets:
+    - name: default-dockercfg-5tn5t
+    nodeName: node2.openshift.local
+    nodeSelector:
+      env: app
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000080000
+      seLinuxOptions:
+        level: s0:c9,c4
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 60
+    volumes:
+    - emptyDir: {}
+      name: mapit-postgresql-data
+    - name: default-token-l6zdn
+      secret:
+        defaultMode: 420
+        secretName: default-token-l6zdn
+  status:
+    phase: Pending
+    qosClass: Burstable
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      openshift.io/build.name: ui-1
+      openshift.io/scc: privileged
+      pod.alpha.kubernetes.io/init-containers: '[{"name":"git-clone","image":"openshift3/ose-sti-builder:v3.7.14","command":["openshift-git-clone"],"args":["--loglevel=0"],"env":[{"name":"BUILD","value":"{\"kind\":\"Build\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"ui-1\",\"namespace\":\"mapit\",\"selfLink\":\"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-1\",\"uid\":\"5bd045ef-05a8-11e8-97ac-000c29f32a28\",\"resourceVersion\":\"8520857\",\"creationTimestamp\":\"2018-01-30T10:28:48Z\",\"labels\":{\"buildconfig\":\"ui\",\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.start-policy\":\"Serial\",\"template\":\"httpd-example\"},\"annotations\":{\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.number\":\"1\"},\"ownerReferences\":[{\"apiVersion\":\"build.openshift.io/v1\",\"kind\":\"BuildConfig\",\"name\":\"ui\",\"uid\":\"5b1bb776-05a8-11e8-97ac-000c29f32a28\",\"controller\":true}]},\"spec\":{\"serviceAccount\":\"builder\",\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"https://github.com/jchraibi/mapit-spring.git\",\"ref\":\"master\"},\"contextDir\":\"/src/main/resources/static\"},\"strategy\":{\"type\":\"Source\",\"sourceStrategy\":{\"from\":{\"kind\":\"DockerImage\",\"name\":\"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd\"}}},\"output\":{\"to\":{\"kind\":\"DockerImage\",\"name\":\"docker-registry.default.svc:5000/mapit/ui:latest\"},\"pushSecret\":{\"name\":\"builder-dockercfg-ckdqd\"}},\"resources\":{},\"postCommit\":{},\"nodeSelector\":null,\"triggeredBy\":[{\"message\":\"Image
+        change\",\"imageChangeBuild\":{\"imageID\":\"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd\",\"fromRef\":{\"kind\":\"ImageStreamTag\",\"namespace\":\"openshift\",\"name\":\"httpd:2.4\"}}}]},\"status\":{\"phase\":\"New\",\"outputDockerImageReference\":\"docker-registry.default.svc:5000/mapit/ui:latest\",\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"mapit\",\"name\":\"ui\"},\"output\":{}}}\n"},{"name":"SOURCE_REPOSITORY","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_URI","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_CONTEXT_DIR","value":"/src/main/resources/static"},{"name":"SOURCE_REF","value":"master"},{"name":"ORIGIN_VERSION","value":"v3.7.14"},{"name":"ALLOWED_UIDS","value":"1-"},{"name":"DROP_CAPS","value":"KILL,MKNOD,SETGID,SETUID"}],"resources":{},"volumeMounts":[{"name":"buildworkdir","mountPath":"/tmp/build"},{"name":"builder-token-sg5vl","readOnly":true,"mountPath":"/var/run/secrets/kubernetes.io/serviceaccount"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":false}},{"name":"manage-dockerfile","image":"openshift3/ose-sti-builder:v3.7.14","command":["openshift-manage-dockerfile"],"args":["--loglevel=0"],"env":[{"name":"BUILD","value":"{\"kind\":\"Build\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"ui-1\",\"namespace\":\"mapit\",\"selfLink\":\"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-1\",\"uid\":\"5bd045ef-05a8-11e8-97ac-000c29f32a28\",\"resourceVersion\":\"8520857\",\"creationTimestamp\":\"2018-01-30T10:28:48Z\",\"labels\":{\"buildconfig\":\"ui\",\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.start-policy\":\"Serial\",\"template\":\"httpd-example\"},\"annotations\":{\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.number\":\"1\"},\"ownerReferences\":[{\"apiVersion\":\"build.openshift.io/v1\",\"kind\":\"BuildConfig\",\"name\":\"ui\",\"uid\":\"5b1bb776-05a8-11e8-97ac-000c29f32a28\",\"controller\":true}]},\"spec\":{\"serviceAccount\":\"builder\",\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"https://github.com/jchraibi/mapit-spring.git\",\"ref\":\"master\"},\"contextDir\":\"/src/main/resources/static\"},\"strategy\":{\"type\":\"Source\",\"sourceStrategy\":{\"from\":{\"kind\":\"DockerImage\",\"name\":\"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd\"}}},\"output\":{\"to\":{\"kind\":\"DockerImage\",\"name\":\"docker-registry.default.svc:5000/mapit/ui:latest\"},\"pushSecret\":{\"name\":\"builder-dockercfg-ckdqd\"}},\"resources\":{},\"postCommit\":{},\"nodeSelector\":null,\"triggeredBy\":[{\"message\":\"Image
+        change\",\"imageChangeBuild\":{\"imageID\":\"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd\",\"fromRef\":{\"kind\":\"ImageStreamTag\",\"namespace\":\"openshift\",\"name\":\"httpd:2.4\"}}}]},\"status\":{\"phase\":\"New\",\"outputDockerImageReference\":\"docker-registry.default.svc:5000/mapit/ui:latest\",\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"mapit\",\"name\":\"ui\"},\"output\":{}}}\n"},{"name":"SOURCE_REPOSITORY","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_URI","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_CONTEXT_DIR","value":"/src/main/resources/static"},{"name":"SOURCE_REF","value":"master"},{"name":"ORIGIN_VERSION","value":"v3.7.14"},{"name":"ALLOWED_UIDS","value":"1-"},{"name":"DROP_CAPS","value":"KILL,MKNOD,SETGID,SETUID"}],"resources":{},"volumeMounts":[{"name":"buildworkdir","mountPath":"/tmp/build"},{"name":"builder-token-sg5vl","readOnly":true,"mountPath":"/var/run/secrets/kubernetes.io/serviceaccount"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":false}}]'
+      pod.beta.kubernetes.io/init-containers: '[{"name":"git-clone","image":"openshift3/ose-sti-builder:v3.7.14","command":["openshift-git-clone"],"args":["--loglevel=0"],"env":[{"name":"BUILD","value":"{\"kind\":\"Build\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"ui-1\",\"namespace\":\"mapit\",\"selfLink\":\"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-1\",\"uid\":\"5bd045ef-05a8-11e8-97ac-000c29f32a28\",\"resourceVersion\":\"8520857\",\"creationTimestamp\":\"2018-01-30T10:28:48Z\",\"labels\":{\"buildconfig\":\"ui\",\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.start-policy\":\"Serial\",\"template\":\"httpd-example\"},\"annotations\":{\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.number\":\"1\"},\"ownerReferences\":[{\"apiVersion\":\"build.openshift.io/v1\",\"kind\":\"BuildConfig\",\"name\":\"ui\",\"uid\":\"5b1bb776-05a8-11e8-97ac-000c29f32a28\",\"controller\":true}]},\"spec\":{\"serviceAccount\":\"builder\",\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"https://github.com/jchraibi/mapit-spring.git\",\"ref\":\"master\"},\"contextDir\":\"/src/main/resources/static\"},\"strategy\":{\"type\":\"Source\",\"sourceStrategy\":{\"from\":{\"kind\":\"DockerImage\",\"name\":\"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd\"}}},\"output\":{\"to\":{\"kind\":\"DockerImage\",\"name\":\"docker-registry.default.svc:5000/mapit/ui:latest\"},\"pushSecret\":{\"name\":\"builder-dockercfg-ckdqd\"}},\"resources\":{},\"postCommit\":{},\"nodeSelector\":null,\"triggeredBy\":[{\"message\":\"Image
+        change\",\"imageChangeBuild\":{\"imageID\":\"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd\",\"fromRef\":{\"kind\":\"ImageStreamTag\",\"namespace\":\"openshift\",\"name\":\"httpd:2.4\"}}}]},\"status\":{\"phase\":\"New\",\"outputDockerImageReference\":\"docker-registry.default.svc:5000/mapit/ui:latest\",\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"mapit\",\"name\":\"ui\"},\"output\":{}}}\n"},{"name":"SOURCE_REPOSITORY","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_URI","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_CONTEXT_DIR","value":"/src/main/resources/static"},{"name":"SOURCE_REF","value":"master"},{"name":"ORIGIN_VERSION","value":"v3.7.14"},{"name":"ALLOWED_UIDS","value":"1-"},{"name":"DROP_CAPS","value":"KILL,MKNOD,SETGID,SETUID"}],"resources":{},"volumeMounts":[{"name":"buildworkdir","mountPath":"/tmp/build"},{"name":"builder-token-sg5vl","readOnly":true,"mountPath":"/var/run/secrets/kubernetes.io/serviceaccount"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":false}},{"name":"manage-dockerfile","image":"openshift3/ose-sti-builder:v3.7.14","command":["openshift-manage-dockerfile"],"args":["--loglevel=0"],"env":[{"name":"BUILD","value":"{\"kind\":\"Build\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"ui-1\",\"namespace\":\"mapit\",\"selfLink\":\"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-1\",\"uid\":\"5bd045ef-05a8-11e8-97ac-000c29f32a28\",\"resourceVersion\":\"8520857\",\"creationTimestamp\":\"2018-01-30T10:28:48Z\",\"labels\":{\"buildconfig\":\"ui\",\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.start-policy\":\"Serial\",\"template\":\"httpd-example\"},\"annotations\":{\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.number\":\"1\"},\"ownerReferences\":[{\"apiVersion\":\"build.openshift.io/v1\",\"kind\":\"BuildConfig\",\"name\":\"ui\",\"uid\":\"5b1bb776-05a8-11e8-97ac-000c29f32a28\",\"controller\":true}]},\"spec\":{\"serviceAccount\":\"builder\",\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"https://github.com/jchraibi/mapit-spring.git\",\"ref\":\"master\"},\"contextDir\":\"/src/main/resources/static\"},\"strategy\":{\"type\":\"Source\",\"sourceStrategy\":{\"from\":{\"kind\":\"DockerImage\",\"name\":\"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd\"}}},\"output\":{\"to\":{\"kind\":\"DockerImage\",\"name\":\"docker-registry.default.svc:5000/mapit/ui:latest\"},\"pushSecret\":{\"name\":\"builder-dockercfg-ckdqd\"}},\"resources\":{},\"postCommit\":{},\"nodeSelector\":null,\"triggeredBy\":[{\"message\":\"Image
+        change\",\"imageChangeBuild\":{\"imageID\":\"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd\",\"fromRef\":{\"kind\":\"ImageStreamTag\",\"namespace\":\"openshift\",\"name\":\"httpd:2.4\"}}}]},\"status\":{\"phase\":\"New\",\"outputDockerImageReference\":\"docker-registry.default.svc:5000/mapit/ui:latest\",\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"mapit\",\"name\":\"ui\"},\"output\":{}}}\n"},{"name":"SOURCE_REPOSITORY","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_URI","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_CONTEXT_DIR","value":"/src/main/resources/static"},{"name":"SOURCE_REF","value":"master"},{"name":"ORIGIN_VERSION","value":"v3.7.14"},{"name":"ALLOWED_UIDS","value":"1-"},{"name":"DROP_CAPS","value":"KILL,MKNOD,SETGID,SETUID"}],"resources":{},"volumeMounts":[{"name":"buildworkdir","mountPath":"/tmp/build"},{"name":"builder-token-sg5vl","readOnly":true,"mountPath":"/var/run/secrets/kubernetes.io/serviceaccount"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":false}}]'
+    creationTimestamp: null
+    labels:
+      openshift.io/build.name: ui-1
+    name: ui-1-build
+    ownerReferences:
+    - apiVersion: build.openshift.io/v1
+      controller: true
+      kind: Build
+      name: ui-1
+      uid: 5bd045ef-05a8-11e8-97ac-000c29f32a28
+  spec:
+    containers:
+    - args:
+      - --loglevel=0
+      command:
+      - openshift-sti-build
+      env:
+      - name: BUILD
+        value: |
+          {"kind":"Build","apiVersion":"v1","metadata":{"name":"ui-1","namespace":"mapit","selfLink":"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-1","uid":"5bd045ef-05a8-11e8-97ac-000c29f32a28","resourceVersion":"8520857","creationTimestamp":"2018-01-30T10:28:48Z","labels":{"buildconfig":"ui","openshift.io/build-config.name":"ui","openshift.io/build.start-policy":"Serial","template":"httpd-example"},"annotations":{"openshift.io/build-config.name":"ui","openshift.io/build.number":"1"},"ownerReferences":[{"apiVersion":"build.openshift.io/v1","kind":"BuildConfig","name":"ui","uid":"5b1bb776-05a8-11e8-97ac-000c29f32a28","controller":true}]},"spec":{"serviceAccount":"builder","source":{"type":"Git","git":{"uri":"https://github.com/jchraibi/mapit-spring.git","ref":"master"},"contextDir":"/src/main/resources/static"},"strategy":{"type":"Source","sourceStrategy":{"from":{"kind":"DockerImage","name":"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd"}}},"output":{"to":{"kind":"DockerImage","name":"docker-registry.default.svc:5000/mapit/ui:latest"},"pushSecret":{"name":"builder-dockercfg-ckdqd"}},"resources":{},"postCommit":{},"nodeSelector":null,"triggeredBy":[{"message":"Image change","imageChangeBuild":{"imageID":"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd","fromRef":{"kind":"ImageStreamTag","namespace":"openshift","name":"httpd:2.4"}}}]},"status":{"phase":"New","outputDockerImageReference":"docker-registry.default.svc:5000/mapit/ui:latest","config":{"kind":"BuildConfig","namespace":"mapit","name":"ui"},"output":{}}}
+      - name: SOURCE_REPOSITORY
+        value: https://github.com/jchraibi/mapit-spring.git
+      - name: SOURCE_URI
+        value: https://github.com/jchraibi/mapit-spring.git
+      - name: SOURCE_CONTEXT_DIR
+        value: /src/main/resources/static
+      - name: SOURCE_REF
+        value: master
+      - name: ORIGIN_VERSION
+        value: v3.7.14
+      - name: ALLOWED_UIDS
+        value: 1-
+      - name: DROP_CAPS
+        value: KILL,MKNOD,SETGID,SETUID
+      - name: PUSH_DOCKERCFG_PATH
+        value: /var/run/secrets/openshift.io/push
+      image: openshift3/ose-sti-builder:v3.7.14
+      imagePullPolicy: IfNotPresent
+      name: sti-build
+      resources: {}
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /tmp/build
+        name: buildworkdir
+      - mountPath: /var/run/docker.sock
+        name: docker-socket
+      - mountPath: /var/run/crio.sock
+        name: crio-socket
+      - mountPath: /var/run/secrets/openshift.io/push
+        name: builder-dockercfg-ckdqd-push
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: builder-token-sg5vl
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    imagePullSecrets:
+    - name: builder-dockercfg-ckdqd
+    initContainers:
+    - args:
+      - --loglevel=0
+      command:
+      - openshift-git-clone
+      env:
+      - name: BUILD
+        value: |
+          {"kind":"Build","apiVersion":"v1","metadata":{"name":"ui-1","namespace":"mapit","selfLink":"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-1","uid":"5bd045ef-05a8-11e8-97ac-000c29f32a28","resourceVersion":"8520857","creationTimestamp":"2018-01-30T10:28:48Z","labels":{"buildconfig":"ui","openshift.io/build-config.name":"ui","openshift.io/build.start-policy":"Serial","template":"httpd-example"},"annotations":{"openshift.io/build-config.name":"ui","openshift.io/build.number":"1"},"ownerReferences":[{"apiVersion":"build.openshift.io/v1","kind":"BuildConfig","name":"ui","uid":"5b1bb776-05a8-11e8-97ac-000c29f32a28","controller":true}]},"spec":{"serviceAccount":"builder","source":{"type":"Git","git":{"uri":"https://github.com/jchraibi/mapit-spring.git","ref":"master"},"contextDir":"/src/main/resources/static"},"strategy":{"type":"Source","sourceStrategy":{"from":{"kind":"DockerImage","name":"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd"}}},"output":{"to":{"kind":"DockerImage","name":"docker-registry.default.svc:5000/mapit/ui:latest"},"pushSecret":{"name":"builder-dockercfg-ckdqd"}},"resources":{},"postCommit":{},"nodeSelector":null,"triggeredBy":[{"message":"Image change","imageChangeBuild":{"imageID":"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd","fromRef":{"kind":"ImageStreamTag","namespace":"openshift","name":"httpd:2.4"}}}]},"status":{"phase":"New","outputDockerImageReference":"docker-registry.default.svc:5000/mapit/ui:latest","config":{"kind":"BuildConfig","namespace":"mapit","name":"ui"},"output":{}}}
+      - name: SOURCE_REPOSITORY
+        value: https://github.com/jchraibi/mapit-spring.git
+      - name: SOURCE_URI
+        value: https://github.com/jchraibi/mapit-spring.git
+      - name: SOURCE_CONTEXT_DIR
+        value: /src/main/resources/static
+      - name: SOURCE_REF
+        value: master
+      - name: ORIGIN_VERSION
+        value: v3.7.14
+      - name: ALLOWED_UIDS
+        value: 1-
+      - name: DROP_CAPS
+        value: KILL,MKNOD,SETGID,SETUID
+      image: openshift3/ose-sti-builder:v3.7.14
+      imagePullPolicy: IfNotPresent
+      name: git-clone
+      resources: {}
+      securityContext:
+        privileged: false
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /tmp/build
+        name: buildworkdir
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: builder-token-sg5vl
+        readOnly: true
+    - args:
+      - --loglevel=0
+      command:
+      - openshift-manage-dockerfile
+      env:
+      - name: BUILD
+        value: |
+          {"kind":"Build","apiVersion":"v1","metadata":{"name":"ui-1","namespace":"mapit","selfLink":"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-1","uid":"5bd045ef-05a8-11e8-97ac-000c29f32a28","resourceVersion":"8520857","creationTimestamp":"2018-01-30T10:28:48Z","labels":{"buildconfig":"ui","openshift.io/build-config.name":"ui","openshift.io/build.start-policy":"Serial","template":"httpd-example"},"annotations":{"openshift.io/build-config.name":"ui","openshift.io/build.number":"1"},"ownerReferences":[{"apiVersion":"build.openshift.io/v1","kind":"BuildConfig","name":"ui","uid":"5b1bb776-05a8-11e8-97ac-000c29f32a28","controller":true}]},"spec":{"serviceAccount":"builder","source":{"type":"Git","git":{"uri":"https://github.com/jchraibi/mapit-spring.git","ref":"master"},"contextDir":"/src/main/resources/static"},"strategy":{"type":"Source","sourceStrategy":{"from":{"kind":"DockerImage","name":"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd"}}},"output":{"to":{"kind":"DockerImage","name":"docker-registry.default.svc:5000/mapit/ui:latest"},"pushSecret":{"name":"builder-dockercfg-ckdqd"}},"resources":{},"postCommit":{},"nodeSelector":null,"triggeredBy":[{"message":"Image change","imageChangeBuild":{"imageID":"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd","fromRef":{"kind":"ImageStreamTag","namespace":"openshift","name":"httpd:2.4"}}}]},"status":{"phase":"New","outputDockerImageReference":"docker-registry.default.svc:5000/mapit/ui:latest","config":{"kind":"BuildConfig","namespace":"mapit","name":"ui"},"output":{}}}
+      - name: SOURCE_REPOSITORY
+        value: https://github.com/jchraibi/mapit-spring.git
+      - name: SOURCE_URI
+        value: https://github.com/jchraibi/mapit-spring.git
+      - name: SOURCE_CONTEXT_DIR
+        value: /src/main/resources/static
+      - name: SOURCE_REF
+        value: master
+      - name: ORIGIN_VERSION
+        value: v3.7.14
+      - name: ALLOWED_UIDS
+        value: 1-
+      - name: DROP_CAPS
+        value: KILL,MKNOD,SETGID,SETUID
+      image: openshift3/ose-sti-builder:v3.7.14
+      imagePullPolicy: IfNotPresent
+      name: manage-dockerfile
+      resources: {}
+      securityContext:
+        privileged: false
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /tmp/build
+        name: buildworkdir
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: builder-token-sg5vl
+        readOnly: true
+    nodeName: node1.openshift.local
+    nodeSelector:
+      env: app
+    restartPolicy: Never
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: builder
+    serviceAccountName: builder
+    terminationGracePeriodSeconds: 30
+    volumes:
+    - emptyDir: {}
+      name: buildworkdir
+    - hostPath:
+        path: /var/run/docker.sock
+      name: docker-socket
+    - hostPath:
+        path: /var/run/crio.sock
+      name: crio-socket
+    - name: builder-dockercfg-ckdqd-push
+      secret:
+        defaultMode: 384
+        secretName: builder-dockercfg-ckdqd
+    - name: builder-token-sg5vl
+      secret:
+        defaultMode: 420
+        secretName: builder-token-sg5vl
+  status:
+    phase: Pending
+    qosClass: BestEffort
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      openshift.io/build.name: ui-2
+      openshift.io/scc: privileged
+      pod.alpha.kubernetes.io/init-containers: '[{"name":"git-clone","image":"openshift3/ose-sti-builder:v3.7.14","command":["openshift-git-clone"],"args":["--loglevel=0"],"env":[{"name":"BUILD","value":"{\"kind\":\"Build\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"ui-2\",\"namespace\":\"mapit\",\"selfLink\":\"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-2\",\"uid\":\"71413f00-05aa-11e8-b864-000c29d0d489\",\"resourceVersion\":\"8525904\",\"creationTimestamp\":\"2018-01-30T10:43:43Z\",\"labels\":{\"buildconfig\":\"ui\",\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.start-policy\":\"Serial\",\"template\":\"httpd-example\"},\"annotations\":{\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.number\":\"2\"},\"ownerReferences\":[{\"apiVersion\":\"build.openshift.io/v1\",\"kind\":\"BuildConfig\",\"name\":\"ui\",\"uid\":\"5b1bb776-05a8-11e8-97ac-000c29f32a28\",\"controller\":true}]},\"spec\":{\"serviceAccount\":\"builder\",\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"https://github.com/jchraibi/mapit-spring.git\",\"ref\":\"master\"},\"contextDir\":\"/src/main/resources/static\"},\"strategy\":{\"type\":\"Source\",\"sourceStrategy\":{\"from\":{\"kind\":\"DockerImage\",\"name\":\"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd\"}}},\"output\":{\"to\":{\"kind\":\"DockerImage\",\"name\":\"docker-registry.default.svc:5000/mapit/ui:latest\"},\"pushSecret\":{\"name\":\"builder-dockercfg-ckdqd\"}},\"resources\":{},\"postCommit\":{},\"nodeSelector\":null,\"triggeredBy\":[{\"message\":\"Manually
+        triggered\"}]},\"status\":{\"phase\":\"New\",\"outputDockerImageReference\":\"docker-registry.default.svc:5000/mapit/ui:latest\",\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"mapit\",\"name\":\"ui\"},\"output\":{}}}\n"},{"name":"SOURCE_REPOSITORY","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_URI","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_CONTEXT_DIR","value":"/src/main/resources/static"},{"name":"SOURCE_REF","value":"master"},{"name":"ORIGIN_VERSION","value":"v3.7.14"},{"name":"ALLOWED_UIDS","value":"1-"},{"name":"DROP_CAPS","value":"KILL,MKNOD,SETGID,SETUID"}],"resources":{},"volumeMounts":[{"name":"buildworkdir","mountPath":"/tmp/build"},{"name":"builder-token-sg5vl","readOnly":true,"mountPath":"/var/run/secrets/kubernetes.io/serviceaccount"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":false}},{"name":"manage-dockerfile","image":"openshift3/ose-sti-builder:v3.7.14","command":["openshift-manage-dockerfile"],"args":["--loglevel=0"],"env":[{"name":"BUILD","value":"{\"kind\":\"Build\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"ui-2\",\"namespace\":\"mapit\",\"selfLink\":\"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-2\",\"uid\":\"71413f00-05aa-11e8-b864-000c29d0d489\",\"resourceVersion\":\"8525904\",\"creationTimestamp\":\"2018-01-30T10:43:43Z\",\"labels\":{\"buildconfig\":\"ui\",\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.start-policy\":\"Serial\",\"template\":\"httpd-example\"},\"annotations\":{\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.number\":\"2\"},\"ownerReferences\":[{\"apiVersion\":\"build.openshift.io/v1\",\"kind\":\"BuildConfig\",\"name\":\"ui\",\"uid\":\"5b1bb776-05a8-11e8-97ac-000c29f32a28\",\"controller\":true}]},\"spec\":{\"serviceAccount\":\"builder\",\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"https://github.com/jchraibi/mapit-spring.git\",\"ref\":\"master\"},\"contextDir\":\"/src/main/resources/static\"},\"strategy\":{\"type\":\"Source\",\"sourceStrategy\":{\"from\":{\"kind\":\"DockerImage\",\"name\":\"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd\"}}},\"output\":{\"to\":{\"kind\":\"DockerImage\",\"name\":\"docker-registry.default.svc:5000/mapit/ui:latest\"},\"pushSecret\":{\"name\":\"builder-dockercfg-ckdqd\"}},\"resources\":{},\"postCommit\":{},\"nodeSelector\":null,\"triggeredBy\":[{\"message\":\"Manually
+        triggered\"}]},\"status\":{\"phase\":\"New\",\"outputDockerImageReference\":\"docker-registry.default.svc:5000/mapit/ui:latest\",\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"mapit\",\"name\":\"ui\"},\"output\":{}}}\n"},{"name":"SOURCE_REPOSITORY","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_URI","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_CONTEXT_DIR","value":"/src/main/resources/static"},{"name":"SOURCE_REF","value":"master"},{"name":"ORIGIN_VERSION","value":"v3.7.14"},{"name":"ALLOWED_UIDS","value":"1-"},{"name":"DROP_CAPS","value":"KILL,MKNOD,SETGID,SETUID"}],"resources":{},"volumeMounts":[{"name":"buildworkdir","mountPath":"/tmp/build"},{"name":"builder-token-sg5vl","readOnly":true,"mountPath":"/var/run/secrets/kubernetes.io/serviceaccount"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":false}}]'
+      pod.beta.kubernetes.io/init-containers: '[{"name":"git-clone","image":"openshift3/ose-sti-builder:v3.7.14","command":["openshift-git-clone"],"args":["--loglevel=0"],"env":[{"name":"BUILD","value":"{\"kind\":\"Build\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"ui-2\",\"namespace\":\"mapit\",\"selfLink\":\"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-2\",\"uid\":\"71413f00-05aa-11e8-b864-000c29d0d489\",\"resourceVersion\":\"8525904\",\"creationTimestamp\":\"2018-01-30T10:43:43Z\",\"labels\":{\"buildconfig\":\"ui\",\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.start-policy\":\"Serial\",\"template\":\"httpd-example\"},\"annotations\":{\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.number\":\"2\"},\"ownerReferences\":[{\"apiVersion\":\"build.openshift.io/v1\",\"kind\":\"BuildConfig\",\"name\":\"ui\",\"uid\":\"5b1bb776-05a8-11e8-97ac-000c29f32a28\",\"controller\":true}]},\"spec\":{\"serviceAccount\":\"builder\",\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"https://github.com/jchraibi/mapit-spring.git\",\"ref\":\"master\"},\"contextDir\":\"/src/main/resources/static\"},\"strategy\":{\"type\":\"Source\",\"sourceStrategy\":{\"from\":{\"kind\":\"DockerImage\",\"name\":\"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd\"}}},\"output\":{\"to\":{\"kind\":\"DockerImage\",\"name\":\"docker-registry.default.svc:5000/mapit/ui:latest\"},\"pushSecret\":{\"name\":\"builder-dockercfg-ckdqd\"}},\"resources\":{},\"postCommit\":{},\"nodeSelector\":null,\"triggeredBy\":[{\"message\":\"Manually
+        triggered\"}]},\"status\":{\"phase\":\"New\",\"outputDockerImageReference\":\"docker-registry.default.svc:5000/mapit/ui:latest\",\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"mapit\",\"name\":\"ui\"},\"output\":{}}}\n"},{"name":"SOURCE_REPOSITORY","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_URI","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_CONTEXT_DIR","value":"/src/main/resources/static"},{"name":"SOURCE_REF","value":"master"},{"name":"ORIGIN_VERSION","value":"v3.7.14"},{"name":"ALLOWED_UIDS","value":"1-"},{"name":"DROP_CAPS","value":"KILL,MKNOD,SETGID,SETUID"}],"resources":{},"volumeMounts":[{"name":"buildworkdir","mountPath":"/tmp/build"},{"name":"builder-token-sg5vl","readOnly":true,"mountPath":"/var/run/secrets/kubernetes.io/serviceaccount"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":false}},{"name":"manage-dockerfile","image":"openshift3/ose-sti-builder:v3.7.14","command":["openshift-manage-dockerfile"],"args":["--loglevel=0"],"env":[{"name":"BUILD","value":"{\"kind\":\"Build\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"ui-2\",\"namespace\":\"mapit\",\"selfLink\":\"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-2\",\"uid\":\"71413f00-05aa-11e8-b864-000c29d0d489\",\"resourceVersion\":\"8525904\",\"creationTimestamp\":\"2018-01-30T10:43:43Z\",\"labels\":{\"buildconfig\":\"ui\",\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.start-policy\":\"Serial\",\"template\":\"httpd-example\"},\"annotations\":{\"openshift.io/build-config.name\":\"ui\",\"openshift.io/build.number\":\"2\"},\"ownerReferences\":[{\"apiVersion\":\"build.openshift.io/v1\",\"kind\":\"BuildConfig\",\"name\":\"ui\",\"uid\":\"5b1bb776-05a8-11e8-97ac-000c29f32a28\",\"controller\":true}]},\"spec\":{\"serviceAccount\":\"builder\",\"source\":{\"type\":\"Git\",\"git\":{\"uri\":\"https://github.com/jchraibi/mapit-spring.git\",\"ref\":\"master\"},\"contextDir\":\"/src/main/resources/static\"},\"strategy\":{\"type\":\"Source\",\"sourceStrategy\":{\"from\":{\"kind\":\"DockerImage\",\"name\":\"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd\"}}},\"output\":{\"to\":{\"kind\":\"DockerImage\",\"name\":\"docker-registry.default.svc:5000/mapit/ui:latest\"},\"pushSecret\":{\"name\":\"builder-dockercfg-ckdqd\"}},\"resources\":{},\"postCommit\":{},\"nodeSelector\":null,\"triggeredBy\":[{\"message\":\"Manually
+        triggered\"}]},\"status\":{\"phase\":\"New\",\"outputDockerImageReference\":\"docker-registry.default.svc:5000/mapit/ui:latest\",\"config\":{\"kind\":\"BuildConfig\",\"namespace\":\"mapit\",\"name\":\"ui\"},\"output\":{}}}\n"},{"name":"SOURCE_REPOSITORY","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_URI","value":"https://github.com/jchraibi/mapit-spring.git"},{"name":"SOURCE_CONTEXT_DIR","value":"/src/main/resources/static"},{"name":"SOURCE_REF","value":"master"},{"name":"ORIGIN_VERSION","value":"v3.7.14"},{"name":"ALLOWED_UIDS","value":"1-"},{"name":"DROP_CAPS","value":"KILL,MKNOD,SETGID,SETUID"}],"resources":{},"volumeMounts":[{"name":"buildworkdir","mountPath":"/tmp/build"},{"name":"builder-token-sg5vl","readOnly":true,"mountPath":"/var/run/secrets/kubernetes.io/serviceaccount"}],"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"FallbackToLogsOnError","imagePullPolicy":"IfNotPresent","securityContext":{"privileged":false}}]'
+    creationTimestamp: null
+    labels:
+      openshift.io/build.name: ui-2
+    name: ui-2-build
+    ownerReferences:
+    - apiVersion: build.openshift.io/v1
+      controller: true
+      kind: Build
+      name: ui-2
+      uid: 71413f00-05aa-11e8-b864-000c29d0d489
+  spec:
+    containers:
+    - args:
+      - --loglevel=0
+      command:
+      - openshift-sti-build
+      env:
+      - name: BUILD
+        value: |
+          {"kind":"Build","apiVersion":"v1","metadata":{"name":"ui-2","namespace":"mapit","selfLink":"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-2","uid":"71413f00-05aa-11e8-b864-000c29d0d489","resourceVersion":"8525904","creationTimestamp":"2018-01-30T10:43:43Z","labels":{"buildconfig":"ui","openshift.io/build-config.name":"ui","openshift.io/build.start-policy":"Serial","template":"httpd-example"},"annotations":{"openshift.io/build-config.name":"ui","openshift.io/build.number":"2"},"ownerReferences":[{"apiVersion":"build.openshift.io/v1","kind":"BuildConfig","name":"ui","uid":"5b1bb776-05a8-11e8-97ac-000c29f32a28","controller":true}]},"spec":{"serviceAccount":"builder","source":{"type":"Git","git":{"uri":"https://github.com/jchraibi/mapit-spring.git","ref":"master"},"contextDir":"/src/main/resources/static"},"strategy":{"type":"Source","sourceStrategy":{"from":{"kind":"DockerImage","name":"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd"}}},"output":{"to":{"kind":"DockerImage","name":"docker-registry.default.svc:5000/mapit/ui:latest"},"pushSecret":{"name":"builder-dockercfg-ckdqd"}},"resources":{},"postCommit":{},"nodeSelector":null,"triggeredBy":[{"message":"Manually triggered"}]},"status":{"phase":"New","outputDockerImageReference":"docker-registry.default.svc:5000/mapit/ui:latest","config":{"kind":"BuildConfig","namespace":"mapit","name":"ui"},"output":{}}}
+      - name: SOURCE_REPOSITORY
+        value: https://github.com/jchraibi/mapit-spring.git
+      - name: SOURCE_URI
+        value: https://github.com/jchraibi/mapit-spring.git
+      - name: SOURCE_CONTEXT_DIR
+        value: /src/main/resources/static
+      - name: SOURCE_REF
+        value: master
+      - name: ORIGIN_VERSION
+        value: v3.7.14
+      - name: ALLOWED_UIDS
+        value: 1-
+      - name: DROP_CAPS
+        value: KILL,MKNOD,SETGID,SETUID
+      - name: PUSH_DOCKERCFG_PATH
+        value: /var/run/secrets/openshift.io/push
+      image: openshift3/ose-sti-builder:v3.7.14
+      imagePullPolicy: IfNotPresent
+      name: sti-build
+      resources: {}
+      securityContext:
+        privileged: true
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /tmp/build
+        name: buildworkdir
+      - mountPath: /var/run/docker.sock
+        name: docker-socket
+      - mountPath: /var/run/crio.sock
+        name: crio-socket
+      - mountPath: /var/run/secrets/openshift.io/push
+        name: builder-dockercfg-ckdqd-push
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: builder-token-sg5vl
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    imagePullSecrets:
+    - name: builder-dockercfg-ckdqd
+    initContainers:
+    - args:
+      - --loglevel=0
+      command:
+      - openshift-git-clone
+      env:
+      - name: BUILD
+        value: |
+          {"kind":"Build","apiVersion":"v1","metadata":{"name":"ui-2","namespace":"mapit","selfLink":"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-2","uid":"71413f00-05aa-11e8-b864-000c29d0d489","resourceVersion":"8525904","creationTimestamp":"2018-01-30T10:43:43Z","labels":{"buildconfig":"ui","openshift.io/build-config.name":"ui","openshift.io/build.start-policy":"Serial","template":"httpd-example"},"annotations":{"openshift.io/build-config.name":"ui","openshift.io/build.number":"2"},"ownerReferences":[{"apiVersion":"build.openshift.io/v1","kind":"BuildConfig","name":"ui","uid":"5b1bb776-05a8-11e8-97ac-000c29f32a28","controller":true}]},"spec":{"serviceAccount":"builder","source":{"type":"Git","git":{"uri":"https://github.com/jchraibi/mapit-spring.git","ref":"master"},"contextDir":"/src/main/resources/static"},"strategy":{"type":"Source","sourceStrategy":{"from":{"kind":"DockerImage","name":"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd"}}},"output":{"to":{"kind":"DockerImage","name":"docker-registry.default.svc:5000/mapit/ui:latest"},"pushSecret":{"name":"builder-dockercfg-ckdqd"}},"resources":{},"postCommit":{},"nodeSelector":null,"triggeredBy":[{"message":"Manually triggered"}]},"status":{"phase":"New","outputDockerImageReference":"docker-registry.default.svc:5000/mapit/ui:latest","config":{"kind":"BuildConfig","namespace":"mapit","name":"ui"},"output":{}}}
+      - name: SOURCE_REPOSITORY
+        value: https://github.com/jchraibi/mapit-spring.git
+      - name: SOURCE_URI
+        value: https://github.com/jchraibi/mapit-spring.git
+      - name: SOURCE_CONTEXT_DIR
+        value: /src/main/resources/static
+      - name: SOURCE_REF
+        value: master
+      - name: ORIGIN_VERSION
+        value: v3.7.14
+      - name: ALLOWED_UIDS
+        value: 1-
+      - name: DROP_CAPS
+        value: KILL,MKNOD,SETGID,SETUID
+      image: openshift3/ose-sti-builder:v3.7.14
+      imagePullPolicy: IfNotPresent
+      name: git-clone
+      resources: {}
+      securityContext:
+        privileged: false
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /tmp/build
+        name: buildworkdir
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: builder-token-sg5vl
+        readOnly: true
+    - args:
+      - --loglevel=0
+      command:
+      - openshift-manage-dockerfile
+      env:
+      - name: BUILD
+        value: |
+          {"kind":"Build","apiVersion":"v1","metadata":{"name":"ui-2","namespace":"mapit","selfLink":"/apis/build.openshift.io/v1/namespaces/mapit/builds/ui-2","uid":"71413f00-05aa-11e8-b864-000c29d0d489","resourceVersion":"8525904","creationTimestamp":"2018-01-30T10:43:43Z","labels":{"buildconfig":"ui","openshift.io/build-config.name":"ui","openshift.io/build.start-policy":"Serial","template":"httpd-example"},"annotations":{"openshift.io/build-config.name":"ui","openshift.io/build.number":"2"},"ownerReferences":[{"apiVersion":"build.openshift.io/v1","kind":"BuildConfig","name":"ui","uid":"5b1bb776-05a8-11e8-97ac-000c29f32a28","controller":true}]},"spec":{"serviceAccount":"builder","source":{"type":"Git","git":{"uri":"https://github.com/jchraibi/mapit-spring.git","ref":"master"},"contextDir":"/src/main/resources/static"},"strategy":{"type":"Source","sourceStrategy":{"from":{"kind":"DockerImage","name":"registry.access.redhat.com/rhscl/httpd-24-rhel7@sha256:cb0ac51837a70d11875b51f240664f94fb63d915e353d31f8aced794348301cd"}}},"output":{"to":{"kind":"DockerImage","name":"docker-registry.default.svc:5000/mapit/ui:latest"},"pushSecret":{"name":"builder-dockercfg-ckdqd"}},"resources":{},"postCommit":{},"nodeSelector":null,"triggeredBy":[{"message":"Manually triggered"}]},"status":{"phase":"New","outputDockerImageReference":"docker-registry.default.svc:5000/mapit/ui:latest","config":{"kind":"BuildConfig","namespace":"mapit","name":"ui"},"output":{}}}
+      - name: SOURCE_REPOSITORY
+        value: https://github.com/jchraibi/mapit-spring.git
+      - name: SOURCE_URI
+        value: https://github.com/jchraibi/mapit-spring.git
+      - name: SOURCE_CONTEXT_DIR
+        value: /src/main/resources/static
+      - name: SOURCE_REF
+        value: master
+      - name: ORIGIN_VERSION
+        value: v3.7.14
+      - name: ALLOWED_UIDS
+        value: 1-
+      - name: DROP_CAPS
+        value: KILL,MKNOD,SETGID,SETUID
+      image: openshift3/ose-sti-builder:v3.7.14
+      imagePullPolicy: IfNotPresent
+      name: manage-dockerfile
+      resources: {}
+      securityContext:
+        privileged: false
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: FallbackToLogsOnError
+      volumeMounts:
+      - mountPath: /tmp/build
+        name: buildworkdir
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: builder-token-sg5vl
+        readOnly: true
+    nodeName: node1.openshift.local
+    nodeSelector:
+      env: app
+    restartPolicy: Never
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: builder
+    serviceAccountName: builder
+    terminationGracePeriodSeconds: 30
+    volumes:
+    - emptyDir: {}
+      name: buildworkdir
+    - hostPath:
+        path: /var/run/docker.sock
+      name: docker-socket
+    - hostPath:
+        path: /var/run/crio.sock
+      name: crio-socket
+    - name: builder-dockercfg-ckdqd-push
+      secret:
+        defaultMode: 384
+        secretName: builder-dockercfg-ckdqd
+    - name: builder-token-sg5vl
+      secret:
+        defaultMode: 420
+        secretName: builder-token-sg5vl
+  status:
+    phase: Pending
+    qosClass: BestEffort
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      kubernetes.io/created-by: |
+        {"kind":"SerializedReference","apiVersion":"v1","reference":{"kind":"ReplicationController","namespace":"mapit","name":"ui-2","uid":"9519a5d2-05aa-11e8-97ac-000c29f32a28","apiVersion":"v1","resourceVersion":"8526430"}}
+      openshift.io/deployment-config.latest-version: "2"
+      openshift.io/deployment-config.name: ui
+      openshift.io/deployment.name: ui-2
+      openshift.io/scc: restricted
+    creationTimestamp: null
+    generateName: ui-2-
+    labels:
+      deployment: ui-2
+      deploymentconfig: ui
+      name: ui
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicationController
+      name: ui-2
+      uid: 9519a5d2-05aa-11e8-97ac-000c29f32a28
+  spec:
+    containers:
+    - image: docker-registry.default.svc:5000/mapit/ui@sha256:a3eb8571fadcd7d175be21a457347ef1bb2e6961c6659dbd82e71bb5329e83ce
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 30
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 3
+      name: httpd-example
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 3
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 3
+      resources:
+        limits:
+          memory: 512Mi
+        requests:
+          memory: 512Mi
+      securityContext:
+        capabilities:
+          drop:
+          - KILL
+          - MKNOD
+          - SETGID
+          - SETUID
+        privileged: false
+        runAsUser: 1000080000
+        seLinuxOptions:
+          level: s0:c9,c4
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-l6zdn
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    imagePullSecrets:
+    - name: default-dockercfg-5tn5t
+    nodeName: node2.openshift.local
+    nodeSelector:
+      env: app
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1000080000
+      seLinuxOptions:
+        level: s0:c9,c4
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    volumes:
+    - name: default-token-l6zdn
+      secret:
+        defaultMode: 420
+        secretName: default-token-l6zdn
+  status:
+    phase: Pending
+    qosClass: Burstable
